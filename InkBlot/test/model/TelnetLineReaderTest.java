@@ -24,7 +24,7 @@ public class TelnetLineReaderTest {
 	@Mock
 	private InputStream inputStream;
 	@Mock
-	private ITelnetLineReaderListener listener;
+	private ILineReaderListener listener;
 
 	private StringToByteArray stringToByteArray = new StringToByteArray();
 
@@ -73,7 +73,7 @@ public class TelnetLineReaderTest {
 	@Test
 	public void testAllListenersNotifiedWhenTextEndingInNewlineArrives() throws Exception {
 		setupInputStream("b\n");
-		ITelnetLineReaderListener listener2 = mock(ITelnetLineReaderListener.class);
+		ILineReaderListener listener2 = mock(ILineReaderListener.class);
 		telnetLineReader.addListener(listener);
 		telnetLineReader.addListener(listener2);
 		telnetLineReader.telnetInputAvailable();

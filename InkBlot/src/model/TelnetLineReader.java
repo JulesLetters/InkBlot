@@ -10,7 +10,7 @@ import org.apache.commons.net.telnet.TelnetInputListener;
 public class TelnetLineReader implements TelnetInputListener {
 
 	private InputStream inputStream;
-	private List<ITelnetLineReaderListener> listenerList = new LinkedList<>();
+	private List<ILineReaderListener> listenerList = new LinkedList<>();
 	private String buffer = "";
 
 	public TelnetLineReader(TelnetClientWrapper telnetClientWrapper) {
@@ -18,7 +18,7 @@ public class TelnetLineReader implements TelnetInputListener {
 		inputStream = telnetClientWrapper.getInputStream();
 	}
 
-	public void addListener(ITelnetLineReaderListener listener) {
+	public void addListener(ILineReaderListener listener) {
 		listenerList.add(listener);
 	}
 
@@ -40,7 +40,7 @@ public class TelnetLineReader implements TelnetInputListener {
 			buffer = buffer.concat(readString);
 
 			if (readString.endsWith("\n")) {
-				for (ITelnetLineReaderListener listener : listenerList) {
+				for (ILineReaderListener listener : listenerList) {
 					String withoutNewline = buffer.substring(0, buffer.length() - 1);
 					listener.lineReceived(withoutNewline);
 				}

@@ -1,5 +1,5 @@
 package model;
 
-public interface ITelnetLineReaderListener {
+public interface ILineReaderListener {
 	public void lineReceived(String string);
 }
