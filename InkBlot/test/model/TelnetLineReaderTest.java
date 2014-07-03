@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
@@ -25,12 +26,15 @@ public class TelnetLineReaderTest {
 	@Mock
 	private ITelnetLineReaderListener listener;
 
+	private StringToByteArray stringToByteArray = new StringToByteArray();
+
 	private TelnetLineReader telnetLineReader;
 
 	@Before
-	public void setup() {
+	public void setup() throws IOException {
 		MockitoAnnotations.initMocks(this);
 		when(telnetClient.getInputStream()).thenReturn(inputStream);
+		when(inputStream.read(any(byte[].class))).thenAnswer(stringToByteArray);
 		telnetLineReader = new TelnetLineReader(telnetClient);
 	}
 
@@ -41,16 +45,7 @@ public class TelnetLineReaderTest {
 
 	@Test
 	public void testListenersNotifiedWhenNewlineArrives() throws Exception {
-		when(inputStream.read(any(byte[].class))).thenAnswer(new Answer() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				Object[] args = invocation.getArguments();
-				byte[] byteArray = (byte[]) args[0];
-				byteArray[0] = '\n';
-				return 1;
-			}
-		});
-
+		setupInputStream("\n");
 		telnetLineReader.addListener(listener);
 		telnetLineReader.telnetInputAvailable();
 
@@ -58,19 +53,8 @@ public class TelnetLineReaderTest {
 	}
 
 	@Test
-	public void testListenersNotifiedWhenTextEndingInNewlineArrives()
-			throws Exception {
-		when(inputStream.read(any(byte[].class))).thenAnswer(new Answer() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				Object[] args = invocation.getArguments();
-				byte[] byteArray = (byte[]) args[0];
-				byteArray[0] = 'a';
-				byteArray[1] = '\n';
-				return 2;
-			}
-		});
-
+	public void testListenersNotifiedWhenTextEndingInNewlineArrives() throws Exception {
+		setupInputStream("a\n");
 		telnetLineReader.addListener(listener);
 		telnetLineReader.telnetInputAvailable();
 
@@ -87,19 +71,8 @@ public class TelnetLineReaderTest {
 	}
 
 	@Test
-	public void testAllListenersNotifiedWhenTextEndingInNewlineArrives()
-			throws Exception {
-		when(inputStream.read(any(byte[].class))).thenAnswer(new Answer() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				Object[] args = invocation.getArguments();
-				byte[] byteArray = (byte[]) args[0];
-				byteArray[0] = 'b';
-				byteArray[1] = '\n';
-				return 2;
-			}
-		});
-
+	public void testAllListenersNotifiedWhenTextEndingInNewlineArrives() throws Exception {
+		setupInputStream("b\n");
 		ITelnetLineReaderListener listener2 = mock(ITelnetLineReaderListener.class);
 		telnetLineReader.addListener(listener);
 		telnetLineReader.addListener(listener2);
@@ -109,4 +82,63 @@ public class TelnetLineReaderTest {
 		verify(listener2).lineReceived("b");
 	}
 
+	@Test
+	public void testListenersAreNotNotifiedWhenTextDoesNotEndWithNewline() throws Exception {
+		setupInputStream("a");
+		telnetLineReader.addListener(listener);
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener, never()).lineReceived(any(String.class));
+	}
+
+	@Test
+	public void testWhenNewlineReceivedSendPreviousCharacters() throws Exception {
+		setupInputStream("a");
+		telnetLineReader.addListener(listener);
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener, never()).lineReceived(any(String.class));
+
+		setupInputStream("b\n");
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener).lineReceived("ab");
+	}
+
+	@Test
+	public void testPreviousCharactersAreDeletedAfterNewline() throws Exception {
+		setupInputStream("abc\n");
+		telnetLineReader.addListener(listener);
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener).lineReceived("abc");
+
+		setupInputStream("xyz\n");
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener).lineReceived("xyz");
+	}
+
+	private void setupInputStream(final String stringToBeRead) {
+		stringToByteArray.setReadableString(stringToBeRead);
+	}
+
+	private class StringToByteArray implements Answer<Integer> {
+		private String stringToBeRead;
+
+		public void setReadableString(String stringToBeRead) {
+			this.stringToBeRead = stringToBeRead;
+		}
+
+		@Override
+		public Integer answer(InvocationOnMock invocation) throws Throwable {
+			byte[] byteArray = (byte[]) invocation.getArguments()[0];
+			byte[] stringBytes = stringToBeRead.getBytes();
+			for (int i = 0; i < stringBytes.length; i++) {
+				byteArray[i] = stringBytes[i];
+			}
+
+			return stringBytes.length;
+		}
+	}
 }

@@ -11,9 +11,7 @@ public class TelnetLineReader implements TelnetInputListener {
 
 	private InputStream inputStream;
 	private List<ITelnetLineReaderListener> listenerList = new LinkedList<>();
-
-	public TelnetLineReader() {
-	}
+	private String buffer = "";
 
 	public TelnetLineReader(TelnetClientWrapper telnetClientWrapper) {
 		telnetClientWrapper.registerInputListener(this);
@@ -28,19 +26,27 @@ public class TelnetLineReader implements TelnetInputListener {
 	public void telnetInputAvailable() {
 		byte[] byteArray = new byte[1024];
 
-		int bytesRead;
+		int bytesRead = 0;
 		try {
 			bytesRead = inputStream.read(byteArray);
-			if (bytesRead != 0) {
-				String string = new String(byteArray, 0, bytesRead - 1);
-
-				for (ITelnetLineReaderListener listener : listenerList) {
-					listener.lineReceived(string);
-				}
-			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+
+		if (bytesRead != 0) {
+			String readString = new String(byteArray, 0, bytesRead);
+
+			buffer = buffer.concat(readString);
+
+			if (readString.endsWith("\n")) {
+				for (ITelnetLineReaderListener listener : listenerList) {
+					String withoutNewline = buffer.substring(0, buffer.length() - 1);
+					listener.lineReceived(withoutNewline);
+				}
+				buffer = "";
+			}
+
 		}
 
 	}
