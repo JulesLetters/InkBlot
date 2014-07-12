@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.net.telnet.TelnetInputListener;
 
-public class TelnetLineReader implements TelnetInputListener {
+public class TelnetLineReader implements TelnetInputListener, ILineReader {
 
 	private InputStream inputStream;
 	private List<ILineReaderListener> listenerList = new LinkedList<>();
@@ -18,6 +18,7 @@ public class TelnetLineReader implements TelnetInputListener {
 		inputStream = telnetClientWrapper.getInputStream();
 	}
 
+	@Override
 	public void addListener(ILineReaderListener listener) {
 		listenerList.add(listener);
 	}
