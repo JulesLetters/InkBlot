@@ -13,7 +13,11 @@ public class TelnetLineReader implements TelnetInputListener, ILineReader {
 	private List<ILineReaderListener> listenerList = new LinkedList<>();
 	private String buffer = "";
 
-	public TelnetLineReader(TelnetClientWrapper telnetClientWrapper) {
+	public TelnetLineReader() {
+		this(new TelnetClientFactory().create());
+	}
+
+	protected TelnetLineReader(TelnetClientWrapper telnetClientWrapper) {
 		telnetClientWrapper.registerInputListener(this);
 		inputStream = telnetClientWrapper.getInputStream();
 	}

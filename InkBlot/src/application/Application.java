@@ -1,10 +1,6 @@
 package application;
 
-import java.io.IOException;
-import java.net.SocketException;
-
 import model.LineBuffer;
-import model.TelnetClientWrapper;
 import model.TelnetLineReader;
 
 import org.eclipse.swt.SWT;
@@ -25,16 +21,7 @@ public class Application {
 		Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayout(new FillLayout());
 
-		TelnetClientWrapper telnetClientWrapper = new TelnetClientWrapper();
-		try {
-			telnetClientWrapper.connect("127.0.0.1", 4201);
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		TelnetLineReader telnetLineReader = new TelnetLineReader(telnetClientWrapper);
+		TelnetLineReader telnetLineReader = new TelnetLineReader();
 		LineBuffer lineBuffer = new LineBuffer();
 		lineBuffer.setLineReader(telnetLineReader);
 
