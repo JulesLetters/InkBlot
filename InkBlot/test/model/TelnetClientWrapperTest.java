@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
@@ -48,8 +49,7 @@ public class TelnetClientWrapperTest {
 	}
 
 	@Test
-	public void testRegisterInputListenerRegistersWithTelnetClient()
-			throws Exception {
+	public void testRegisterInputListenerRegistersWithTelnetClient() throws Exception {
 
 		telnetClientWrapper.registerInputListener(listener);
 
@@ -57,14 +57,24 @@ public class TelnetClientWrapperTest {
 	}
 
 	@Test
-	public void getInputStreamReturnsInputStreamFromTelnetClient()
-			throws Exception {
+	public void getInputStreamReturnsInputStreamFromTelnetClient() throws Exception {
 		InputStream expectedStream = mock(InputStream.class);
 		when(telnetClient.getInputStream()).thenReturn(expectedStream);
 
 		InputStream actualStream = telnetClientWrapper.getInputStream();
 
 		assertSame(expectedStream, actualStream);
+	}
+
+	@Test
+	public void getOutputStreamReturnsOutputStreamFromTelnetClient() {
+		OutputStream expectedStream = mock(OutputStream.class);
+		when(telnetClient.getOutputStream()).thenReturn(expectedStream);
+
+		OutputStream actualStream = telnetClientWrapper.getOutputStream();
+
+		assertSame(expectedStream, actualStream);
+
 	}
 
 }

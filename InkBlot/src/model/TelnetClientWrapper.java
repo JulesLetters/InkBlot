@@ -2,6 +2,7 @@ package model;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketException;
 
 import org.apache.commons.net.telnet.TelnetClient;
@@ -19,8 +20,7 @@ public class TelnetClientWrapper {
 		this.telnetClient = telnetClient;
 	}
 
-	public void connect(String host, int post) throws SocketException,
-			IOException {
+	public void connect(String host, int post) throws SocketException, IOException {
 		telnetClient.connect(host, post);
 	}
 
@@ -34,6 +34,10 @@ public class TelnetClientWrapper {
 
 	public InputStream getInputStream() {
 		return telnetClient.getInputStream();
+	}
+
+	public OutputStream getOutputStream() {
+		return telnetClient.getOutputStream();
 	}
 
 }

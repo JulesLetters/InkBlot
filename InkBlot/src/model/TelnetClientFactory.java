@@ -5,14 +5,18 @@ import java.net.SocketException;
 
 public class TelnetClientFactory {
 
-	public TelnetClientWrapper create() {
-		TelnetClientWrapper telnetClientWrapper = new TelnetClientWrapper();
-		try {
-			telnetClientWrapper.connect("127.0.0.1", 4201);
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+	private static TelnetClientWrapper telnetClientWrapper;
+
+	public TelnetClientWrapper getInstance() {
+		if (telnetClientWrapper == null) {
+			telnetClientWrapper = new TelnetClientWrapper();
+			try {
+				telnetClientWrapper.connect("127.0.0.1", 4201);
+			} catch (SocketException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return telnetClientWrapper;
 	}

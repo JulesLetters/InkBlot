@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="C:/IDE/commons-net-3.3-bin/commons-net-3.3/commons-net-3.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="C:/IDE/mockito-1.9.5/mockito-all-1.9.5.jar"/>
+	<classpathentry kind="lib" path="C:/IDE/Guava/guava-18.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
