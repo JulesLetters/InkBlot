@@ -8,12 +8,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-public class BufferTextViewer {
+public class BufferTextWidget {
 
 	private Text text;
 
-	public BufferTextViewer(Composite composite, int style) {
-		text = new Text(composite, style);
+	public BufferTextWidget(Composite parent, int style) {
+		text = new Text(parent, style);
 	}
 
 	public void setBuffer(final LineBuffer lineBuffer) {

@@ -18,8 +18,8 @@ public class InputTextWidget {
 	private Text text;
 	private IEventBus eventBus = new GuavaEventBus();
 
-	public InputTextWidget(Composite mainComposite, int style) {
-		text = new Text(mainComposite, style);
+	public InputTextWidget(Composite parent, int style) {
+		text = new Text(parent, style);
 		text.addTraverseListener(new TraverseListener() {
 			@Override
 			public void keyTraversed(TraverseEvent e) {
