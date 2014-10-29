@@ -2,43 +2,45 @@ package model;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.LinkedHashMap;
-import java.util.List;
+
+import model.fileStructure.TestCommandText;
+import model.fileStructure.TestFile;
+import model.fileStructure.TestUnit;
+
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 public class TestListModel {
 
-	private YamlWrapper yaml;
 	private FileReaderFactory fileReaderFactory;
 	private String filename;
 
 	public TestListModel() {
-		this(new YamlWrapper(), new FileReaderFactory(), "Tests.txt");
+		this("Tests.txt");
 	}
 
-	protected TestListModel(YamlWrapper yaml, FileReaderFactory fileReaderFactory, String filename) {
-		this.yaml = yaml;
+	protected TestListModel(String filename) {
+		this(new FileReaderFactory(), filename);
+	}
+
+	protected TestListModel(FileReaderFactory fileReaderFactory, String filename) {
 		this.fileReaderFactory = fileReaderFactory;
 		this.filename = filename;
 	}
 
-	public List<LinkedHashMap<String, List<String>>> getTests() {
+	public TestFile getTests() {
 		FileReader fileReader;
-		List<LinkedHashMap<String, List<String>>> list = null;
+		TestFile list = null;
 
 		try {
 			fileReader = fileReaderFactory.create(filename);
 
-			// TypeDescription testFileDescription = new
-			// TypeDescription(TestFile.class);
-			// testFileDescription.putListPropertyType("commands",
-			// TestUnit.class);
-			// testFileDescription.putListPropertyType("commands",
-			// TestUnit.class);
-			// Constructor constructor = new Constructor(TestFile.class);
-			// constructor.addTypeDescription(testFileDescription);
-			//
-			// list = (TestFile) new Yaml(constructor).load(fileReader);
-			list = (List<LinkedHashMap<String, List<String>>>) yaml.load(fileReader);
+			TypeDescription testFileDescription = new TypeDescription(TestFile.class);
+			testFileDescription.putListPropertyType("tests", TestUnit.class);
+			testFileDescription.putListPropertyType("commands", TestCommandText.class);
+			Constructor constructor = new Constructor(TestFile.class);
+			constructor.addTypeDescription(testFileDescription);
+			list = (TestFile) new YamlWrapper(constructor).load(fileReader);
 
 		} catch (FileNotFoundException e) {
 		}

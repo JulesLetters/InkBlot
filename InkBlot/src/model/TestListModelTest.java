@@ -1,11 +1,13 @@
 package model;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.List;
+
+import model.fileStructure.TestCommandText;
+import model.fileStructure.TestFile;
+import model.fileStructure.TestUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,8 +16,6 @@ import org.mockito.MockitoAnnotations;
 
 public class TestListModelTest {
 
-	@Mock
-	private YamlWrapper yaml;
 	@Mock
 	private FileReaderFactory fileReaderFactory;
 	@Mock
@@ -29,27 +29,38 @@ public class TestListModelTest {
 	}
 
 	@Test
-	public void testGetTestsReturnsListsFromFile() throws Exception {
-		List<String> expectedList = Arrays.asList("A", "B");
-		String filename = "Some File";
-		when(fileReaderFactory.create(filename)).thenReturn(fileReader);
-		when(yaml.load(fileReader)).thenReturn(expectedList);
-		testListModel = new TestListModel(yaml, fileReaderFactory, filename);
-
-		List<String> actualList = testListModel.getTests();
-
-		assertTrue(expectedList.equals(actualList));
-	}
-
-	@Test
 	public void testGetTestsIntegrationTest() throws Exception {
-		List<String> expectedList = Arrays.asList("Larry", "Moe", "Curly");
 		String filename = "test/Model/ThreeItems.txt";
-		testListModel = new TestListModel(new YamlWrapper(), new FileReaderFactory(), filename);
+		testListModel = new TestListModel(filename);
 
-		List<String> actualList = testListModel.getTests();
+		TestFile testFile = testListModel.getTests();
 
-		assertTrue(expectedList.equals(actualList));
+		List<TestUnit> tests = testFile.getTests();
+		assertEquals(3, tests.size());
+		TestUnit testUnit1 = tests.get(0);
+		TestUnit testUnit2 = tests.get(1);
+		TestUnit testUnit3 = tests.get(2);
+		List<TestCommandText> commands1 = testUnit1.getCommands();
+		List<TestCommandText> commands2 = testUnit2.getCommands();
+		List<TestCommandText> commands3 = testUnit3.getCommands();
+
+		assertEquals("CompleteExampleTest", testUnit1.getName());
+		assertEquals(4, commands1.size());
+		assertEquals("Command lines enclosed in quotes.", commands1.get(0).getCommandText());
+		assertEquals("Delimit lines with commas.", commands1.get(1).getCommandText());
+		assertEquals("Use \\n \n for newlines.", commands1.get(2).getCommandText());
+		assertEquals("More documentation to follow!", commands1.get(3).getCommandText());
+
+		assertEquals("CommaTest", testUnit2.getName());
+		assertEquals(3, commands2.size());
+		assertEquals("Comma , In text,\nMerged with this line", commands2.get(0).getCommandText());
+		assertEquals("Comma at end", commands2.get(1).getCommandText());
+		assertEquals("End", commands2.get(2).getCommandText());
+
+		assertEquals("MultiLineTest", testUnit3.getName());
+		assertEquals(2, commands3.size());
+		assertEquals("MultiMatch Blah\nBlah\n\nBlah", commands3.get(0).getCommandText());
+		assertEquals("Line Two", commands3.get(1).getCommandText());
 	}
 
 }
