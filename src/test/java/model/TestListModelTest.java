@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.FileReader;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +45,8 @@ public class TestListModelTest {
 	@Test
 	public void testGetTestsIntegrationTest() throws Exception {
 		List<String> expectedList = Arrays.asList("Larry", "Moe", "Curly");
-		String filename = "test/Model/ThreeItems.txt";
+		URL fileUrl = getClass().getResource("ThreeItems.txt");
+		String filename = fileUrl.getFile();
 		testListModel = new TestListModel(new YamlWrapper(), new FileReaderFactory(), filename);
 
 		List<String> actualList = testListModel.getTests();

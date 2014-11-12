@@ -1,3 +1,5 @@
-.metadata/
-InkBlot/bin
-
+.gradle/
+bin/
+build/
+.classpath
+.project
