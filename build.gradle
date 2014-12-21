@@ -6,7 +6,7 @@ version = '1.0'
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Inkblot',
+        attributes 'Implementation-Title': 'EarthdawnDieResult',
                    'Implementation-Version': version
     }
 }
@@ -19,12 +19,7 @@ repositories {
 }
 
 dependencies {
-    // swt dependencies
-    // compile name: "org.eclipse.swt_3.7.2.v3740f"
-    // compile name: "org.eclipse.swt.gtk.linux.x86_3.7.2.v3740f"
- 
-    // jface dependencies
-	   compile name: "org.eclipse.jface_3.10.1.v20140813-1009"
+ 	   compile name: "org.eclipse.jface_3.10.1.v20140813-1009"
 	   compile name: "org.eclipse.jface.text_3.9.1.v20140827-1810"
 	   compile name: "org.eclipse.jface.databinding_1.6.200.v20140528-1422"
 	   compile name: "org.eclipse.ui.workbench_3.106.1.v20140827-1737"
@@ -32,10 +27,8 @@ dependencies {
 	   compile name: "org.eclipse.equinox.common_3.6.200.v20130402-1505"
 	   compile name: "org.eclipse.core.commands_3.6.100.v20140528-1422"
 
-    compile 'org.yaml:snakeyaml:1.14',
-            'org.eclipse.swt:swt:4.4',
-	        'com.google.guava:guava:18.0',
-			'commons-net:commons-net:3.3'
+    compile 'org.apache.commons:commons-math3:3.3',
+	        'org.eclipse.swt:swt:4.4'
 			
 	testCompile 'junit:junit:4.11',
 				'org.mockito:mockito-all:1.9.5'  

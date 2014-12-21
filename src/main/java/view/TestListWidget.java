@@ -12,12 +12,12 @@ public class TestListWidget {
 
 	private ListViewer listViewer;
 
-	public TestListWidget(Composite parent, int style) {
+	public TestListWidget(Composite parent, int style, TestListModel testListModel) {
 		listViewer = new ListViewer(parent, style);
 
 		listViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-		TestFile tests = new TestListModel().getTests();
+		TestFile tests = testListModel.getTests();
 		listViewer.setInput(tests.getTests());
 	}
 

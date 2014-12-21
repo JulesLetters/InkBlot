@@ -2,6 +2,7 @@ package main;
 
 import model.LineBuffer;
 import model.TelnetLineReader;
+import model.TestListModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -34,7 +35,8 @@ public class Main {
 		mainHistory.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		mainHistory.setBuffer(lineBuffer);
 
-		TestListWidget testListWidget = new TestListWidget(mainComposite, SWT.NONE);
+		TestListModel testListModel = new TestListModel();
+		TestListWidget testListWidget = new TestListWidget(mainComposite, SWT.NONE, testListModel);
 		GridData layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, true);
 		layoutData.verticalSpan = 2;
 		testListWidget.getControl().setLayoutData(layoutData);
