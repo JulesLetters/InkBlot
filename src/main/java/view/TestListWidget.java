@@ -1,7 +1,5 @@
 package view;
 
-import model.TestListModel;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.widgets.Composite;
@@ -16,7 +14,7 @@ public class TestListWidget {
 
 		listViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-		listViewer.setInput(new TestListModel().getTests());
+		// listViewer.setInput(new TestListModel().getTestNames());
 	}
 
 	public Control getControl() {
