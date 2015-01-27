@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 import java.util.LinkedList;
 import java.util.List;

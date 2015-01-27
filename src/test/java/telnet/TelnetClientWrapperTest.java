@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import telnet.TelnetClientWrapper;
 
 public class TelnetClientWrapperTest {
 

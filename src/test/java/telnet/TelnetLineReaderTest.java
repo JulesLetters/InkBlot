@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -16,6 +16,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import telnet.ILineReaderListener;
+import telnet.TelnetClientWrapper;
+import telnet.TelnetLineReader;
 
 public class TelnetLineReaderTest {
 

@@ -1,8 +1,5 @@
 package application;
 
-import model.LineBuffer;
-import model.TelnetLineReader;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -11,6 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import telnet.LineBuffer;
+import telnet.TelnetLineReader;
 import view.BufferTextWidget;
 import view.InputTextWidget;
 import view.TestListWidget;

@@ -1,12 +1,12 @@
 package view;
 
-import model.ITextChangeListener;
-import model.LineBuffer;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
+
+import telnet.ITextChangeListener;
+import telnet.LineBuffer;
 
 public class BufferTextWidget {
 

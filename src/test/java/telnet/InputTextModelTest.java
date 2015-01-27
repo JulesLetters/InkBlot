@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -12,6 +12,10 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import telnet.InputTextModel;
+import telnet.TelnetClientFactory;
+import telnet.TelnetClientWrapper;
 
 import com.google.common.eventbus.EventBus;
 

@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 import java.io.IOException;
 import java.io.InputStream;

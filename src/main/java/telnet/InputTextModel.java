@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +16,7 @@ public class InputTextModel {
 		this(new TelnetClientFactory());
 	}
 
-	public InputTextModel(TelnetClientFactory telnetClientFactory) {
+	protected InputTextModel(TelnetClientFactory telnetClientFactory) {
 		telnetClient = telnetClientFactory.getInstance();
 		outputStream = telnetClient.getOutputStream();
 	}

@@ -1,7 +1,5 @@
 package view;
 
-import model.InputTextModel;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
@@ -9,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
+import telnet.InputTextModel;
 import application.GuavaEventBus;
 import application.IEventBus;
 import events.EnterPressedEvent;

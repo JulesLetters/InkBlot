@@ -1,4 +1,4 @@
-package model;
+package telnet;
 
 public interface ILineReader {
 
