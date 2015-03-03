@@ -1,26 +1,25 @@
 package view;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import presenter.TestListPresenter;
+import application.GuavaEventBus;
 import application.TestListModel;
 
 public class TestListWidget {
 
-	private ListViewer listViewer;
+	private TestListView testListView;
 
 	public TestListWidget(Composite parent, int style) {
-		listViewer = new ListViewer(parent, style);
+		testListView = new TestListView(parent, style);
+		GuavaEventBus eventBus = new GuavaEventBus();
+		TestListModel testListModel = new TestListModel(eventBus);
 
-		listViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-		listViewer.setInput(new TestListModel().getTestNames());
+		new TestListPresenter(testListView, testListModel, eventBus);
 	}
 
 	public Control getControl() {
-		return listViewer.getControl();
+		return testListView.getControl();
 	}
-
 }
