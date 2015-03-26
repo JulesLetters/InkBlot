@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 public class TestListView {
 
@@ -18,12 +17,7 @@ public class TestListView {
 	}
 
 	public void setInput(final List<String> testNames) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				listViewer.setInput(testNames);
-			}
-		});
-
+		new SWTThreadRunner().asyncExec(() -> listViewer.setInput(testNames));
 	}
 
 	public Control getControl() {
