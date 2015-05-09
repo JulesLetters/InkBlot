@@ -22,6 +22,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import parser.IParserCallback;
+import parser.ParsedTestFile;
+import parser.ParsedTestUnit;
+import parser.TestFileParser;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModelTest {
@@ -62,10 +66,14 @@ public class TestListModelTest {
 	}
 
 	@Test
-	public void testWhenParserCompletesTestNameIsAddedToList() {
+	public void testWhenParserCompletesTestNamesAreAddedToList() {
 		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
-		List<String> expectedTestNames = Arrays.asList("Larry", "Moe", "Curly");
-		when(parsedTestFile.getTestNames()).thenReturn(expectedTestNames);
+		ParsedTestUnit parsedTestUnit1 = mock(ParsedTestUnit.class);
+		ParsedTestUnit parsedTestUnit2 = mock(ParsedTestUnit.class);
+		when(parsedTestFile.getTests()).thenReturn(Arrays.asList(parsedTestUnit1, parsedTestUnit2));
+		when(parsedTestUnit1.getName()).thenReturn("Larry");
+		when(parsedTestUnit2.getName()).thenReturn("Moe");
+		List<String> expectedTestNames = Arrays.asList("Larry", "Moe");
 
 		model.loadFile(file);
 		verify(parser, never()).parse(any(File.class), any(IParserCallback.class));

@@ -34,7 +34,7 @@ public class Application {
 		mainHistory.setBuffer(lineBuffer);
 
 		TestListWidget testListWidget = new TestListWidget(mainComposite, SWT.NONE);
-		GridData layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, true);
+		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		layoutData.verticalSpan = 2;
 		testListWidget.getControl().setLayoutData(layoutData);
 
