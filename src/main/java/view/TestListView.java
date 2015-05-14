@@ -1,27 +1,26 @@
 package view;
 
-import java.util.List;
+import java.util.Collection;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 
 public class TestListView {
 
-	private ListViewer listViewer;
+	private TreeView<String> treeView = new TreeView<>();
 
-	public TestListView(Composite parent, int style) {
-		listViewer = new ListViewer(parent, style);
-		listViewer.setContentProvider(ArrayContentProvider.getInstance());
+	public void setInput(final Collection<String> testNameList) {
+		TreeItem<String> rootItem = new TreeItem<String>("Tests");
+		rootItem.setExpanded(true);
+		for (String testName : testNameList) {
+			TreeItem<String> item = new TreeItem<String>(testName);
+			rootItem.getChildren().add(item);
+		}
+		treeView.setRoot(rootItem);
 	}
 
-	public void setInput(final List<String> testNames) {
-		new SWTThreadRunner().asyncExec(() -> listViewer.setInput(testNames));
-	}
-
-	public Control getControl() {
-		return listViewer.getControl();
+	public TreeView<String> getNode() {
+		return treeView;
 	}
 
 }

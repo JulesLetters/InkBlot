@@ -1,38 +1,28 @@
 package view;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
-
-import telnet.ITextChangeListener;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.TextArea;
 import telnet.LineBuffer;
 
 public class BufferTextWidget {
 
-	private Text text;
+	private TextArea node = new TextArea();
 
-	public BufferTextWidget(Composite parent, int style) {
-		text = new Text(parent, style);
+	public BufferTextWidget() {
+		node.setEditable(false);
 	}
 
 	public void setBuffer(final LineBuffer lineBuffer) {
-		lineBuffer.addListener(new ITextChangeListener() {
-
-			@Override
-			public void textChanged() {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						text.setText(lineBuffer.getText());
-					}
-				});
-
-			}
-		});
+		lineBuffer.addListener(() -> setTextFromBuffer(lineBuffer));
 	}
 
-	public Control getControl() {
-		return text;
+	private void setTextFromBuffer(final LineBuffer lineBuffer) {
+		Platform.runLater(() -> node.setText(lineBuffer.getText()));
+	}
+
+	public Node getNode() {
+		return node;
 	}
 
 }

@@ -1,53 +1,47 @@
 package application;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import telnet.LineBuffer;
 import telnet.TelnetLineReader;
 import view.BufferTextWidget;
 import view.InputTextWidget;
 import view.TestListWidget;
 
-public class Application {
+public class InkBlot extends Application {
 
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-
-		Composite mainComposite = new Composite(shell, SWT.NONE);
-		GridLayout gridLayout = new GridLayout(2, true);
-		mainComposite.setLayout(gridLayout);
+	@Override
+	public void start(Stage primaryStage) {
+		StackPane root = new StackPane();
+		GridPane gridPane = new GridPane();
+		root.getChildren().add(gridPane);
+		Scene scene = new Scene(root);
 
 		TelnetLineReader telnetLineReader = new TelnetLineReader();
 		LineBuffer lineBuffer = new LineBuffer();
 		lineBuffer.setLineReader(telnetLineReader);
 
-		BufferTextWidget mainHistory = new BufferTextWidget(mainComposite, SWT.MULTI | SWT.READ_ONLY);
-		mainHistory.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		BufferTextWidget mainHistory = new BufferTextWidget();
+		gridPane.add(mainHistory.getNode(), 0, 0);
 		mainHistory.setBuffer(lineBuffer);
 
-		TestListWidget testListWidget = new TestListWidget(mainComposite, SWT.NONE);
-		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		layoutData.verticalSpan = 2;
-		testListWidget.getControl().setLayoutData(layoutData);
+		TestListWidget testListWidget = new TestListWidget();
+		gridPane.add(testListWidget.getNode(), 1, 0, 2, 1);
 
-		InputTextWidget inputTextWidget = new InputTextWidget(mainComposite, SWT.SINGLE | SWT.BORDER);
-		inputTextWidget.getControl().setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+		InputTextWidget inputTextWidget = new InputTextWidget();
+		gridPane.add(inputTextWidget.getNode(), 0, 1);
 
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-		display.dispose();
-
+		root.autosize();
+		primaryStage.setTitle("Inkblot");
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
 }
