@@ -11,6 +11,7 @@ public class BufferTextWidget {
 
 	public BufferTextWidget() {
 		node.setEditable(false);
+		node.textProperty().addListener((observable, oldValue, newValue) -> node.setScrollTop(Double.MAX_VALUE));
 	}
 
 	public void setBuffer(final LineBuffer lineBuffer) {
@@ -18,7 +19,10 @@ public class BufferTextWidget {
 	}
 
 	private void setTextFromBuffer(final LineBuffer lineBuffer) {
-		Platform.runLater(() -> node.setText(lineBuffer.getText()));
+		Platform.runLater(() -> {
+			node.setText(lineBuffer.getText());
+			node.appendText("");
+		});
 	}
 
 	public Node getNode() {
