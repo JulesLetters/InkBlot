@@ -8,6 +8,7 @@ import application.TestListModel;
 
 import com.google.common.eventbus.Subscribe;
 
+import events.RunButtonClicked;
 import events.TestListModelUpdatedEvent;
 
 public class TestListPresenter {
@@ -25,6 +26,11 @@ public class TestListPresenter {
 	@Subscribe
 	public void modelUpdated(TestListModelUpdatedEvent event) {
 		testListView.setInput(testListModel.getTestNames());
+	}
+
+	@Subscribe
+	public void runButtonClicked(RunButtonClicked event) {
+		testListModel.runAllTests();
 	}
 
 }

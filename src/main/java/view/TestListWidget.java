@@ -6,6 +6,7 @@ import javafx.scene.layout.GridPane;
 import presenter.TestListPresenter;
 import application.GuavaEventBus;
 import application.TestListModel;
+import events.RunButtonClicked;
 
 public class TestListWidget {
 
@@ -19,6 +20,7 @@ public class TestListWidget {
 		gridPane.add(runAllButton, 0, 1);
 
 		GuavaEventBus eventBus = new GuavaEventBus();
+		runAllButton.setOnAction((event) -> eventBus.post(new RunButtonClicked()));
 		TestListModel testListModel = new TestListModel(eventBus);
 
 		new TestListPresenter(testListView, testListModel, eventBus);
