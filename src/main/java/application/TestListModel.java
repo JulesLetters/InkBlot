@@ -9,22 +9,25 @@ import parser.IParserCallback;
 import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
 import parser.TestFileParser;
+import runner.TestRunner;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModel implements IParserCallback {
 
-	private ThreadRunner runner;
 	private TestFileParser parser;
-	private List<String> testNames = Collections.emptyList();
+	private TestRunner testRunner;
+	private ThreadRunner threadRunner;
 	private IEventBus eventBus;
+	private List<String> testNames = Collections.emptyList();
 
 	public TestListModel(IEventBus eventBus) {
-		this(new TestFileParser(), new ThreadRunner(), eventBus);
+		this(new TestFileParser(), new TestRunner(), new ThreadRunner(), eventBus);
 	}
 
-	protected TestListModel(TestFileParser parser, ThreadRunner runner, IEventBus eventBus) {
-		this.runner = runner;
+	protected TestListModel(TestFileParser parser, TestRunner testRunner, ThreadRunner threadRunner, IEventBus eventBus) {
 		this.parser = parser;
+		this.testRunner = testRunner;
+		this.threadRunner = threadRunner;
 		this.eventBus = eventBus;
 	}
 
@@ -33,17 +36,23 @@ public class TestListModel implements IParserCallback {
 	}
 
 	public void loadFile(final File file) {
-		runner.run(() -> parser.parse(file, TestListModel.this));
+		threadRunner.run(() -> parser.parse(file, TestListModel.this));
 	}
 
 	@Override
 	public void parseCompleted(ParsedTestFile parsedTestFile) {
 		List<String> names = new ArrayList<>();
-		for (ParsedTestUnit testUnit : parsedTestFile.getTests()) {
+		List<ParsedTestUnit> parsedTestUnitList = parsedTestFile.getTests();
+		testRunner.addParsedUnits(parsedTestUnitList);
+		for (ParsedTestUnit testUnit : parsedTestUnitList) {
 			names.add(testUnit.getName());
 		}
 		this.testNames = names;
 		eventBus.post(new TestListModelUpdatedEvent());
+	}
+
+	public void runAllTests() {
+		threadRunner.run(() -> testRunner.runTests());
 	}
 
 }

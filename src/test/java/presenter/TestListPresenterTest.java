@@ -3,6 +3,7 @@ package presenter;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +23,7 @@ import view.TestListView;
 import application.GuavaEventBus;
 import application.IEventBus;
 import application.TestListModel;
+import events.RunButtonClicked;
 import events.TestListModelUpdatedEvent;
 
 public class TestListPresenterTest {
@@ -75,6 +77,16 @@ public class TestListPresenterTest {
 		new TestListPresenter(testListView, testListModel, eventBus);
 
 		verify(testListView).setInput(expectedList);
+	}
+
+	@Test
+	public void testWhenRunButtonClickedMakeModelRunTests() throws Exception {
+		new TestListPresenter(testListView, testListModel, eventBus);
+		verify(testListModel, never()).runAllTests();
+
+		eventBus.post(new RunButtonClicked());
+
+		verify(testListModel).runAllTests();
 	}
 
 }

@@ -1,12 +1,15 @@
 package parser;
 
-import java.util.Optional;
-
 public class TestCommandFactory {
 
 	public IParsedTestCommand parse(String command) {
-		IParsedTestCommand filler = () -> Optional.empty();
-		return filler;
-	}
 
+		String commandArgs = command.substring(6);
+		if (command.startsWith("Output")) {
+			return new OutputCommand(commandArgs);
+		} else if (command.startsWith("Expect")) {
+			return new ExpectCommand(commandArgs);
+		}
+		return new InvalidCommand();
+	}
 }
