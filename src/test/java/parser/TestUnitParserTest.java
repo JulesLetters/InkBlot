@@ -56,10 +56,8 @@ public class TestUnitParserTest {
 	public void testCommandsFromTestUnitsAreAddedToParsedUnit() throws Exception {
 		when(testUnit.getName()).thenReturn("TestUnit");
 		when(testUnit.getCommands()).thenReturn(Arrays.asList(testCommand1, testCommand2));
-		when(testCommand1.getCommandText()).thenReturn("Command1");
-		when(testCommand2.getCommandText()).thenReturn("Command2");
-		when(testCommandFactory.parse("Command1")).thenReturn(parsedCommand1);
-		when(testCommandFactory.parse("Command2")).thenReturn(parsedCommand2);
+		when(testCommandFactory.parse(testCommand1)).thenReturn(parsedCommand1);
+		when(testCommandFactory.parse(testCommand2)).thenReturn(parsedCommand2);
 
 		ParsedTestUnit parsedTestUnit = testUnitParser.parse(testUnit);
 
@@ -75,10 +73,8 @@ public class TestUnitParserTest {
 	public void testParsedUnitHasErrorWhenParserFails() throws Exception {
 		when(testUnit.getName()).thenReturn("TestUnitName");
 		when(testUnit.getCommands()).thenReturn(Arrays.asList(testCommand1, testCommand2));
-		when(testCommand1.getCommandText()).thenReturn("Command1");
-		when(testCommand2.getCommandText()).thenReturn("Command2");
-		when(testCommandFactory.parse("Command1")).thenReturn(parsedCommand1);
-		when(testCommandFactory.parse("Command2")).thenReturn(parsedCommand2);
+		when(testCommandFactory.parse(testCommand1)).thenReturn(parsedCommand1);
+		when(testCommandFactory.parse(testCommand2)).thenReturn(parsedCommand2);
 		when(parsedCommand2.getError()).thenReturn(Optional.of("Error!"));
 
 		ParsedTestUnit parsedTestUnit = testUnitParser.parse(testUnit);

@@ -12,4 +12,8 @@ public class TestUnitCommand {
 		return unitCommand;
 	}
 
+	public String getCommandType() {
+		return unitCommand.split(" ")[0].toLowerCase();
+	}
+
 }
