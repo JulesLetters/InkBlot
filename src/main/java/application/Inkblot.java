@@ -11,7 +11,7 @@ import view.BufferTextWidget;
 import view.InputTextWidget;
 import view.TestListWidget;
 
-public class InkBlot extends Application {
+public class Inkblot extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
