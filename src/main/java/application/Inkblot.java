@@ -7,6 +7,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import telnet.LineBuffer;
 import telnet.TelnetLineReader;
+import telnet.TelnetLineReaderSingleton;
 import view.BufferTextWidget;
 import view.InputTextWidget;
 import view.TestListWidget;
@@ -20,7 +21,7 @@ public class Inkblot extends Application {
 		root.getChildren().add(gridPane);
 		Scene scene = new Scene(root);
 
-		TelnetLineReader telnetLineReader = new TelnetLineReader();
+		TelnetLineReader telnetLineReader = new TelnetLineReaderSingleton().getInstance();
 		LineBuffer lineBuffer = new LineBuffer();
 		lineBuffer.setLineReader(telnetLineReader);
 

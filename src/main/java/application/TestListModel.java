@@ -10,6 +10,7 @@ import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
 import parser.TestFileParser;
 import runner.TestRunner;
+import runner.TestRunnerFactory;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModel implements IParserCallback {
@@ -21,7 +22,7 @@ public class TestListModel implements IParserCallback {
 	private TestRunner testRunner;
 
 	public TestListModel(IEventBus eventBus) {
-		this(eventBus, new TestFileParser(), new ThreadRunner(), new TestRunner());
+		this(eventBus, new TestFileParser(), new ThreadRunner(), new TestRunnerFactory().getTestRunner());
 	}
 
 	TestListModel(IEventBus eventBus, TestFileParser parser, ThreadRunner runner, TestRunner testRunner) {
