@@ -1,6 +1,5 @@
 package view;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import telnet.InputTextModel;
@@ -23,7 +22,7 @@ public class InputTextWidget {
 		if (eventBus != null) {
 			eventBus.post(new EnterPressedEvent(text.getText()));
 		}
-		Platform.runLater(() -> text.setText(""));
+		new JavaFXThreadRunner().runLater(() -> text.setText(""));
 	}
 
 	public Node getNode() {

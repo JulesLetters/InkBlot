@@ -1,6 +1,5 @@
 package view;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import telnet.LineBuffer;
@@ -19,7 +18,7 @@ public class BufferTextWidget {
 	}
 
 	private void setTextFromBuffer(final LineBuffer lineBuffer) {
-		Platform.runLater(() -> {
+		new JavaFXThreadRunner().runLater(() -> {
 			node.setText(lineBuffer.getText());
 			node.appendText("");
 		});
