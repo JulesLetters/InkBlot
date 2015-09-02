@@ -61,11 +61,11 @@ public class TestListModelTest {
 
 	@Test
 	public void testOnLoadFileSubmitRunnableToThreadRunner() {
-		verify(threadRunner, never()).run(any(Runnable.class));
+		verify(threadRunner, never()).run(any(Runnable.class), any());
 
 		model.loadFile(file);
 
-		verify(threadRunner).run(runnableCaptor.capture());
+		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class TestListModelTest {
 		model.loadFile(file);
 		verify(parser, never()).parse(any(File.class), any(IParserCallback.class));
 
-		verify(threadRunner).run(runnableCaptor.capture());
+		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
 		runnableCaptor.getValue().run();
 
 		verify(parser).parse(eq(file), callbackCaptor.capture());
@@ -96,7 +96,7 @@ public class TestListModelTest {
 		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
 
 		model.loadFile(file);
-		verify(threadRunner).run(runnableCaptor.capture());
+		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
 		runnableCaptor.getValue().run();
 		verify(parser).parse(eq(file), callbackCaptor.capture());
 
@@ -106,32 +106,26 @@ public class TestListModelTest {
 	}
 
 	@Test
-	public void testWhenParserCompletesParsedTestsAreAddedToTestRunner() {
+	public void testRunAllTestsCallsTestRunnerWithParsedTests() throws Exception {
 		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
 		ParsedTestUnit parsedTestUnit1 = mock(ParsedTestUnit.class);
 		ParsedTestUnit parsedTestUnit2 = mock(ParsedTestUnit.class);
 		when(parsedTestFile.getTests()).thenReturn(Arrays.asList(parsedTestUnit1, parsedTestUnit2));
 
 		model.loadFile(file);
-		verify(threadRunner).run(runnableCaptor.capture());
+		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
 		runnableCaptor.getValue().run();
 		verify(parser).parse(eq(file), callbackCaptor.capture());
-
-		verifyZeroInteractions(testRunner);
 		callbackCaptor.getValue().parseCompleted(parsedTestFile);
-		verify(testRunner).setParsedUnits(Arrays.asList(parsedTestUnit1, parsedTestUnit2));
-	}
 
-	@Test
-	public void testRunAllTestsCallsTestRunner() throws Exception {
 		model.runAllTests();
 
-		verify(testRunner, never()).runTests();
-		verify(threadRunner).run(runnableCaptor.capture());
+		verify(testRunner, never()).runTests(any());
+		verify(threadRunner).run(runnableCaptor.capture(), eq("Test Runner"));
 
 		runnableCaptor.getValue().run();
 
-		verify(testRunner).runTests();
+		verify(testRunner).runTests(Arrays.asList(parsedTestUnit1, parsedTestUnit2));
 	}
 
 }

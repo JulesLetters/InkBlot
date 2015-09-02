@@ -8,16 +8,24 @@ import telnet.TelnetLineWriter;
 
 public class TestRunner {
 
+	private SingleTestRunner singleTestRunner;
+	private LineBuffer lineBuffer;
+	private TelnetLineWriter lineWriter;
+
 	public TestRunner(LineBuffer lineBuffer, TelnetLineWriter lineWriter) {
-
+		this(lineBuffer, lineWriter, new SingleTestRunner());
 	}
 
-	public void runTests() {
-		// TODO Auto-generated method stub
+	TestRunner(LineBuffer lineBuffer, TelnetLineWriter lineWriter, SingleTestRunner singleTestRunner) {
+		this.singleTestRunner = singleTestRunner;
+		this.lineBuffer = lineBuffer;
+		this.lineWriter = lineWriter;
 	}
 
-	public void setParsedUnits(List<ParsedTestUnit> parsedTestUnitsList) {
-		// TODO Auto-generated method stub
+	public void runTests(List<ParsedTestUnit> parsedTestList) {
+		for (ParsedTestUnit parsedTestUnit : parsedTestList) {
+			singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit);
+		}
 	}
 
 }

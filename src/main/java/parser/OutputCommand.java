@@ -3,6 +3,8 @@ package parser;
 import java.util.Optional;
 
 import loader.TestUnitCommand;
+import telnet.LineBuffer;
+import telnet.TelnetLineWriter;
 
 public class OutputCommand implements IParsedTestCommand {
 
@@ -12,6 +14,18 @@ public class OutputCommand implements IParsedTestCommand {
 	@Override
 	public Optional<String> getError() {
 		return Optional.empty();
+	}
+
+	@Override
+	public String execute(LineBuffer lineBuffer, TelnetLineWriter lineWriter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTimeoutStatus() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

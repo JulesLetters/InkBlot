@@ -1,9 +1,9 @@
 package application;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import parser.IParserCallback;
 import parser.ParsedTestFile;
@@ -17,9 +17,9 @@ public class TestListModel implements IParserCallback {
 
 	private ThreadRunner threadRunner;
 	private TestFileParser parser;
-	private List<String> testNames = Collections.emptyList();
 	private IEventBus eventBus;
 	private TestRunner testRunner;
+	private List<ParsedTestUnit> parsedTestUnitList = Collections.emptyList();
 
 	public TestListModel(IEventBus eventBus) {
 		this(eventBus, new TestFileParser(), new ThreadRunner(), new TestRunnerFactory().getTestRunner());
@@ -30,31 +30,26 @@ public class TestListModel implements IParserCallback {
 		this.parser = parser;
 		this.threadRunner = runner;
 		this.testRunner = testRunner;
-
 	}
 
 	public List<String> getTestNames() {
-		return testNames;
+		return parsedTestUnitList.stream().map((testUnit) -> {
+			return testUnit.getName();
+		}).collect(Collectors.toList());
 	}
 
 	public void loadFile(final File file) {
-		threadRunner.run(() -> parser.parse(file, TestListModel.this));
+		threadRunner.run(() -> parser.parse(file, TestListModel.this), "File Parser");
 	}
 
 	@Override
 	public void parseCompleted(ParsedTestFile parsedTestFile) {
-		List<String> names = new ArrayList<>();
-		List<ParsedTestUnit> parsedTestUnitList = parsedTestFile.getTests();
-		testRunner.setParsedUnits(parsedTestUnitList);
-		for (ParsedTestUnit testUnit : parsedTestUnitList) {
-			names.add(testUnit.getName());
-		}
-		this.testNames = names;
+		parsedTestUnitList = parsedTestFile.getTests();
 		eventBus.post(new TestListModelUpdatedEvent());
 	}
 
 	public void runAllTests() {
-		threadRunner.run(() -> testRunner.runTests());
+		threadRunner.run(() -> testRunner.runTests(parsedTestUnitList), "Test Runner");
 	}
 
 }
