@@ -8,10 +8,10 @@ import org.junit.Test;
 public class InvalidCommandTest {
 
 	@Test
-	public void testGetErrorReturnsInvalidCommandMessage() throws Exception {
+	public void testGetParserErrorReturnsInvalidCommandMessage() throws Exception {
 		TestUnitCommand testUnitCommand = new TestUnitCommand("Irrelevant");
 		InvalidCommand invalidCommand = new InvalidCommand(testUnitCommand);
 
-		assertEquals("Invalid Command", invalidCommand.getError().get());
+		assertEquals("Invalid Command", invalidCommand.getParserError().get());
 	}
 }

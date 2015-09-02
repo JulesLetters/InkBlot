@@ -37,8 +37,8 @@ public class TestUnitParserTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		testUnitParser = new TestUnitParser(testCommandFactory);
-		when(parsedCommand1.getError()).thenReturn(Optional.empty());
-		when(parsedCommand2.getError()).thenReturn(Optional.empty());
+		when(parsedCommand1.getParserError()).thenReturn(Optional.empty());
+		when(parsedCommand2.getParserError()).thenReturn(Optional.empty());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class TestUnitParserTest {
 		when(testUnit.getCommands()).thenReturn(Arrays.asList(testCommand1, testCommand2));
 		when(testCommandFactory.parse(testCommand1)).thenReturn(parsedCommand1);
 		when(testCommandFactory.parse(testCommand2)).thenReturn(parsedCommand2);
-		when(parsedCommand2.getError()).thenReturn(Optional.of("Error!"));
+		when(parsedCommand2.getParserError()).thenReturn(Optional.of("Error!"));
 
 		ParsedTestUnit parsedTestUnit = testUnitParser.parse(testUnit);
 

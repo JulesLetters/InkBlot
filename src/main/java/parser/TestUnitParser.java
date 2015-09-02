@@ -32,7 +32,7 @@ public class TestUnitParser {
 		List<IParsedTestCommand> commands = new ArrayList<IParsedTestCommand>();
 		for (TestUnitCommand command : testUnit.getCommands()) {
 			IParsedTestCommand parsedCommand = testCommandFactory.parse(command);
-			if (parsedCommand.getError().isPresent()) {
+			if (parsedCommand.getParserError().isPresent()) {
 				parsedTestUnit.setError(Optional.of("Invalid Command(s)"));
 			}
 			commands.add(parsedCommand);

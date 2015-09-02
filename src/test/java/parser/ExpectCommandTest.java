@@ -8,10 +8,10 @@ import org.junit.Test;
 public class ExpectCommandTest {
 
 	@Test
-	public void testGetErrorReturnsEmptyOptional() throws Exception {
+	public void testGetParserErrorReturnsEmptyOptional() throws Exception {
 		TestUnitCommand testUnitCommand = new TestUnitCommand("Irrelevant");
 		ExpectCommand expectCommand = new ExpectCommand(testUnitCommand);
 
-		assertFalse(expectCommand.getError().isPresent());
+		assertFalse(expectCommand.getParserError().isPresent());
 	}
 }

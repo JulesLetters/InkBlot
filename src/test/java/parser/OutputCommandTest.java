@@ -8,10 +8,10 @@ import org.junit.Test;
 public class OutputCommandTest {
 
 	@Test
-	public void testGetErrorReturnsEmptyOptional() throws Exception {
+	public void testGetParserErrorReturnsEmptyOptional() throws Exception {
 		TestUnitCommand testUnitCommand = new TestUnitCommand("Irrelevant");
 		OutputCommand outputCommand = new OutputCommand(testUnitCommand);
 
-		assertFalse(outputCommand.getError().isPresent());
+		assertFalse(outputCommand.getParserError().isPresent());
 	}
 }

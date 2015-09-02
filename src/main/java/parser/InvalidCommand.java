@@ -12,7 +12,7 @@ public class InvalidCommand implements IParsedTestCommand {
 	}
 
 	@Override
-	public Optional<String> getError() {
+	public Optional<String> getParserError() {
 		return Optional.of("Invalid Command");
 	}
 

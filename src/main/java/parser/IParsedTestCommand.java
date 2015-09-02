@@ -7,7 +7,7 @@ import telnet.TelnetLineWriter;
 
 public interface IParsedTestCommand {
 
-	Optional<String> getError();
+	Optional<String> getParserError();
 
 	String execute(LineBuffer lineBuffer, TelnetLineWriter lineWriter);
 
