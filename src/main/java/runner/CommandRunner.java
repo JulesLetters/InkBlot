@@ -1,11 +1,9 @@
 package runner;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import parser.IParsedTestCommand;
 import telnet.LineBuffer;
@@ -13,28 +11,33 @@ import telnet.TelnetLineWriter;
 
 public class CommandRunner {
 
-	private ExecutorService executorService;
-	private CommandRunnerTaskFactory callableFactory;
+	private static final long COMMAND_TIMEOUT_MILLIS = 3000;
+	private ScheduledExecutorService scheduledExecutorService;
+	private CommandRunnerListenerFactory commandRunnerListenerFactory;
 
 	public CommandRunner() {
-		this(Executors.newSingleThreadExecutor(), new CommandRunnerTaskFactory());
+		this(Executors.newSingleThreadScheduledExecutor(), new CommandRunnerListenerFactory());
 	}
 
-	CommandRunner(ExecutorService executorService, CommandRunnerTaskFactory callableFactory) {
-		this.executorService = executorService;
-		this.callableFactory = callableFactory;
+	CommandRunner(ScheduledExecutorService scheduledExecutorService,
+			CommandRunnerListenerFactory commandRunnerListenerFactory) {
+		this.scheduledExecutorService = scheduledExecutorService;
+		this.commandRunnerListenerFactory = commandRunnerListenerFactory;
 	}
 
 	public CommandResult runCommand(IParsedTestCommand command, LineBuffer lineBuffer, TelnetLineWriter lineWriter) {
-		CommandRunnerTask callable = callableFactory.create(command, lineBuffer, lineWriter);
-		Future<String> future = executorService.submit(callable);
+		CommandResultListener listener = commandRunnerListenerFactory.create();
+		command.execute(lineBuffer, lineWriter, listener);
 
-		try {
-			return new CommandResult(future.get(3000L, TimeUnit.MILLISECONDS));
-		} catch (TimeoutException e) {
-			return new CommandResult(command.getTimeoutStatus());
-		} catch (InterruptedException | ExecutionException e) {
-			return new CommandResult(CommandResult.EXCEPTION);
-		}
+		ScheduledFuture<?> schedule = scheduledExecutorService.schedule(() -> {
+			if (listener.lockOutRegularStatus()) {
+				command.timeout(lineBuffer, lineWriter, listener);
+			}
+		}, COMMAND_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+
+		CommandResult commandResult = listener.getStatus();
+		schedule.cancel(false);
+		command.stop(lineBuffer, lineWriter, listener);
+		return commandResult;
 	}
 }

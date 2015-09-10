@@ -3,6 +3,7 @@ package parser;
 import java.util.Optional;
 
 import loader.TestUnitCommand;
+import runner.CommandResultListener;
 import telnet.LineBuffer;
 import telnet.TelnetLineWriter;
 
@@ -17,15 +18,21 @@ public class ExpectCommand implements IParsedTestCommand {
 	}
 
 	@Override
-	public String execute(LineBuffer lineBuffer, TelnetLineWriter lineWriter) {
+	public void execute(LineBuffer lineBuffer, TelnetLineWriter lineWriter, CommandResultListener listener) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	@Override
-	public String getTimeoutStatus() {
+	public void timeout(LineBuffer lineBuffer, TelnetLineWriter lineWriter, CommandResultListener listener) {
 		// TODO Auto-generated method stub
-		return null;
+
+	}
+
+	@Override
+	public void stop(LineBuffer lineBuffer, TelnetLineWriter lineWriter, CommandResultListener listener) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
