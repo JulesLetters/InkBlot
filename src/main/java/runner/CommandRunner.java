@@ -30,7 +30,7 @@ public class CommandRunner {
 		command.execute(lineBuffer, lineWriter, listener);
 
 		ScheduledFuture<?> schedule = scheduledExecutorService.schedule(() -> {
-			if (listener.lockOutRegularStatus()) {
+			if (listener.ignoreRegularStatus()) {
 				command.timeout(lineBuffer, lineWriter, listener);
 			}
 		}, COMMAND_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);

@@ -5,7 +5,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class CommandResultListener {
 
-	private boolean regularStatusLocked;
+	private boolean ignoringRegularStatus;
 	private BlockingQueue<CommandResult> queue = new ArrayBlockingQueue<>(1);
 
 	public CommandResult getStatus() {
@@ -16,13 +16,13 @@ public class CommandResultListener {
 		}
 	}
 
-	public synchronized boolean lockOutRegularStatus() {
-		regularStatusLocked = true;
+	public synchronized boolean ignoreRegularStatus() {
+		ignoringRegularStatus = true;
 		return queue.isEmpty();
 	}
 
 	public synchronized void setStatus(CommandResult commandResult) {
-		if (!regularStatusLocked) {
+		if (!ignoringRegularStatus) {
 			internalSetStatus(commandResult);
 		}
 	}

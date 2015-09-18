@@ -74,8 +74,8 @@ public class CommandResultListenerTest {
 	}
 
 	@Test
-	public void testLockCausesSetStatusToBeIgnoredAndReturnsTrue() throws Exception {
-		assertTrue(commandResultListener.lockOutRegularStatus());
+	public void testIgnoreCausesSetStatusToBeIgnoredAndReturnsTrue() throws Exception {
+		assertTrue(commandResultListener.ignoreRegularStatus());
 		commandResultListener.setStatus(commandResult1);
 		commandResultListener.setTimeoutStatus(commandResult2);
 		CommandResult actualResult = commandResultListener.getStatus();
@@ -83,9 +83,9 @@ public class CommandResultListenerTest {
 	}
 
 	@Test
-	public void testLockReturnsFalseIfStatusAlreadySet() throws Exception {
+	public void testIgnoreReturnsFalseIfStatusAlreadySet() throws Exception {
 		commandResultListener.setStatus(commandResult1);
-		assertFalse(commandResultListener.lockOutRegularStatus());
+		assertFalse(commandResultListener.ignoreRegularStatus());
 	}
 
 	@Test

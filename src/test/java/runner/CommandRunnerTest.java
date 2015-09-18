@@ -73,7 +73,7 @@ public class CommandRunnerTest {
 
 	@Test
 	public void testTimeoutCommandAfterDelay() throws Exception {
-		when(commandResultListener.lockOutRegularStatus()).thenReturn(true);
+		when(commandResultListener.ignoreRegularStatus()).thenReturn(true);
 		commandRunner.runCommand(command, lineBuffer, lineWriter);
 
 		verify(scheduledExecutorService).schedule(runnableCaptor.capture(), eq(3000L), eq(TimeUnit.MILLISECONDS));
@@ -86,7 +86,7 @@ public class CommandRunnerTest {
 
 	@Test
 	public void testDoNotTimeoutCommandIfListenerCannotLockMutex() throws Exception {
-		when(commandResultListener.lockOutRegularStatus()).thenReturn(false);
+		when(commandResultListener.ignoreRegularStatus()).thenReturn(false);
 
 		commandRunner.runCommand(command, lineBuffer, lineWriter);
 
