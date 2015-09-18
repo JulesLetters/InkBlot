@@ -10,10 +10,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import telnet.ILineReader;
-import telnet.ITextChangeListener;
-import telnet.LineBuffer;
-
 public class LineBufferTest {
 
 	@Mock
@@ -101,4 +97,20 @@ public class LineBufferTest {
 		verify(listener1).textChanged();
 		verify(listener2).textChanged();
 	}
+
+	@Test
+	public void testRemovedListenersNotCalledWhenTextUpdated() throws Exception {
+		String hello = "Hello";
+		ITextChangeListener listener1 = mock(ITextChangeListener.class);
+		ITextChangeListener listener2 = mock(ITextChangeListener.class);
+
+		lineBuffer.addListener(listener1);
+		lineBuffer.addListener(listener2);
+		lineBuffer.removeListener(listener1);
+		lineBuffer.lineReceived(hello);
+
+		verify(listener1, never()).textChanged();
+		verify(listener2).textChanged();
+	}
+
 }

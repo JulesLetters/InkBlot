@@ -1,11 +1,11 @@
 package telnet;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineBuffer implements ILineReaderListener {
 
-	private List<ITextChangeListener> listenerList = new LinkedList<>();
+	private List<ITextChangeListener> listenerList = new ArrayList<>();
 	private String buffer = "";
 
 	public void setLineReader(ILineReader lineReader) {
@@ -35,5 +35,9 @@ public class LineBuffer implements ILineReaderListener {
 
 	public void addListener(ITextChangeListener listener) {
 		listenerList.add(listener);
+	}
+
+	public void removeListener(ITextChangeListener listener) {
+		listenerList.remove(listener);
 	}
 }

@@ -16,4 +16,12 @@ public class TestUnitCommand {
 		return unitCommand.split(" ")[0].toLowerCase();
 	}
 
+	public String getCommandArgument() {
+		int indexOf = unitCommand.indexOf(" ");
+		if (indexOf == -1) {
+			return "";
+		}
+		return unitCommand.substring(indexOf + 1);
+	}
+
 }
