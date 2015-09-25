@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
@@ -14,8 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import telnet.TelnetClientWrapper;
 
 public class TelnetClientWrapperTest {
 
@@ -76,7 +75,16 @@ public class TelnetClientWrapperTest {
 		OutputStream actualStream = telnetClientWrapper.getOutputStream();
 
 		assertSame(expectedStream, actualStream);
-
 	}
 
+	@Test
+	public void testOutputChannelWritesToOutputStream() throws Exception {
+		byte[] bytes = "Hello".getBytes();
+		OutputStream expectedStream = mock(OutputStream.class);
+		when(telnetClient.getOutputStream()).thenReturn(expectedStream);
+
+		telnetClientWrapper.getOutputChannel().write(ByteBuffer.wrap(bytes));
+
+		verify(expectedStream).write(bytes, 0, bytes.length);
+	}
 }

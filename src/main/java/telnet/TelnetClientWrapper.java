@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
@@ -38,6 +40,10 @@ public class TelnetClientWrapper {
 
 	public OutputStream getOutputStream() {
 		return telnetClient.getOutputStream();
+	}
+
+	public WritableByteChannel getOutputChannel() {
+		return Channels.newChannel(getOutputStream());
 	}
 
 }
