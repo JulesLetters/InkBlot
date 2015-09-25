@@ -4,6 +4,7 @@ import telnet.LineBuffer;
 import telnet.TelnetLineReader;
 import telnet.TelnetLineReaderSingleton;
 import telnet.TelnetLineWriter;
+import telnet.TelnetLineWriterSingleton;
 
 public class TestRunnerFactory {
 
@@ -12,7 +13,7 @@ public class TestRunnerFactory {
 		LineBuffer lineBuffer = new LineBuffer();
 		lineBuffer.setLineReader(telnetLineReader);
 
-		TelnetLineWriter telnetLineWriter = new TelnetLineWriter();
+		TelnetLineWriter telnetLineWriter = new TelnetLineWriterSingleton().getInstance();
 
 		return new TestRunner(lineBuffer, telnetLineWriter);
 	}
