@@ -10,19 +10,21 @@ public class WriteRunnable implements Runnable {
 
 	private String stringToWrite;
 	private IWriteCallback callback;
-	private WritableByteChannel writeableByteChannel;
+	private TelnetClientWrapper telnetClient;
 
-	public WriteRunnable(String stringToWrite, IWriteCallback callback, WritableByteChannel writeableByteChannel) {
+	public WriteRunnable(String stringToWrite, IWriteCallback callback, TelnetClientWrapper telnetClient) {
 		this.stringToWrite = stringToWrite;
 		this.callback = callback;
-		this.writeableByteChannel = writeableByteChannel;
+		this.telnetClient = telnetClient;
 	}
 
 	@Override
 	public void run() {
 		try {
 			String actualStringToWrite = stringToWrite + "\n";
-			writeableByteChannel.write(ByteBuffer.wrap(actualStringToWrite.getBytes()));
+			WritableByteChannel channel = getTelnetClient().getOutputChannel();
+			channel.write(ByteBuffer.wrap(actualStringToWrite.getBytes()));
+			getTelnetClient().getOutputStream().flush();
 			callback.call(Optional.empty());
 		} catch (NonWritableChannelException e) {
 			callback.call(Optional.of(e));
@@ -39,8 +41,8 @@ public class WriteRunnable implements Runnable {
 		return callback;
 	}
 
-	public WritableByteChannel getWriteableByteChannel() {
-		return writeableByteChannel;
+	public TelnetClientWrapper getTelnetClient() {
+		return telnetClient;
 	}
 
 }

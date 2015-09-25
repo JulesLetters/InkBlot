@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +32,6 @@ public class TelnetLineWriterTest {
 	@Mock
 	private TelnetClientWrapper telnetClient;
 	@Mock
-	private WritableByteChannel writeChannel;
-	@Mock
 	private IWriteCallback writeCallback;
 	@Captor
 	private ArgumentCaptor<WriteRunnable> writeRunnableCaptor;
@@ -46,7 +43,6 @@ public class TelnetLineWriterTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		when(telnetClient.getOutputChannel()).thenReturn(writeChannel);
 		when(executorServiceFactory.newSingleThreadExecutor()).thenReturn(executorService1, executorService2);
 		lineWriter = new TelnetLineWriter(telnetClient, executorServiceFactory);
 	}
@@ -60,7 +56,7 @@ public class TelnetLineWriterTest {
 
 		assertEquals("Think Test", writeRunnable.getStringToWrite());
 		assertEquals(writeCallback, writeRunnable.getCallback());
-		assertEquals(writeChannel, writeRunnable.getWriteableByteChannel());
+		assertEquals(telnetClient, writeRunnable.getTelnetClient());
 	}
 
 	@Test

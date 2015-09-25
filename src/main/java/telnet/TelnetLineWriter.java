@@ -1,29 +1,28 @@
 package telnet;
 
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 public class TelnetLineWriter {
 
-	private WritableByteChannel outChannel;
 	private ExecutorServiceFactory executorServiceFactory;
 	private ExecutorService executorService;
+	private TelnetClientWrapper telnetClientWrapper;
 
 	public TelnetLineWriter() {
 		this(new TelnetClientFactory().getInstance(), new ExecutorServiceFactory());
 	}
 
 	TelnetLineWriter(TelnetClientWrapper telnetClientWrapper, ExecutorServiceFactory executorServiceFactory) {
-		outChannel = telnetClientWrapper.getOutputChannel();
+		this.telnetClientWrapper = telnetClientWrapper;
 		this.executorServiceFactory = executorServiceFactory;
 		executorService = executorServiceFactory.newSingleThreadExecutor();
 	}
 
 	public void write(String stringToWrite, IWriteCallback writeCallback) {
-		executorService.submit(new WriteRunnable(stringToWrite, writeCallback, outChannel));
+		executorService.submit(new WriteRunnable(stringToWrite, writeCallback, telnetClientWrapper));
 	}
 
 	public void interrupt() {

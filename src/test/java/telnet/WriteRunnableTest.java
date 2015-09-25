@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
@@ -29,7 +30,11 @@ public class WriteRunnableTest {
 	@Mock
 	private IWriteCallback writeCallback;
 	@Mock
+	private TelnetClientWrapper telnetClient;
+	@Mock
 	private WritableByteChannel writeChannel;
+	@Mock
+	private OutputStream outputStream;
 	@Captor
 	private ArgumentCaptor<ByteBuffer> byteBufferCaptor;
 
@@ -38,13 +43,15 @@ public class WriteRunnableTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		when(telnetClient.getOutputChannel()).thenReturn(writeChannel);
+		when(telnetClient.getOutputStream()).thenReturn(outputStream);
 	}
 
 	@Test
 	public void testRunnableWritesStringPlusNewlineToChannel() throws IOException {
 		String stringToWrite = "think Hello";
 		String expectedWrittenText = stringToWrite + "\n";
-		writeRunnable = new WriteRunnable(stringToWrite, writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable(stringToWrite, writeCallback, telnetClient);
 
 		writeRunnable.run();
 
@@ -53,16 +60,19 @@ public class WriteRunnableTest {
 		byte[] writtenByteArray = new byte[expectedWrittenText.length()];
 		byteBuffer.get(writtenByteArray);
 		assertArrayEquals(expectedWrittenText.getBytes(), writtenByteArray);
+
+		verify(outputStream).flush();
 	}
 
 	@Test
 	public void testAfterWritingInvokeCallbackWithEmptyOptional() throws Exception {
-		writeRunnable = new WriteRunnable("think Hi There!", writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable("think Hi There!", writeCallback, telnetClient);
 
 		writeRunnable.run();
 
-		InOrder inOrder = Mockito.inOrder(writeChannel, writeCallback);
+		InOrder inOrder = Mockito.inOrder(writeChannel, outputStream, writeCallback);
 		inOrder.verify(writeChannel).write(byteBufferCaptor.capture());
+		inOrder.verify(outputStream).flush();
 		inOrder.verify(writeCallback).call(Optional.empty());
 	}
 
@@ -70,7 +80,7 @@ public class WriteRunnableTest {
 	public void testCallCallbackWithExceptionWhenChannelNotOpen() throws Exception {
 		NonWritableChannelException exception = new NonWritableChannelException();
 		when(writeChannel.write(any())).thenThrow(exception);
-		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, telnetClient);
 
 		writeRunnable.run();
 
@@ -82,7 +92,7 @@ public class WriteRunnableTest {
 	public void testCallCallbackWithExceptionWhenChannelClosed() throws Exception {
 		ClosedChannelException exception = new ClosedChannelException();
 		when(writeChannel.write(any())).thenThrow(exception);
-		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, telnetClient);
 
 		writeRunnable.run();
 
@@ -94,7 +104,7 @@ public class WriteRunnableTest {
 	public void testCallCallbackWithExceptionWhenAsynchronousCloseOccurs() throws Exception {
 		AsynchronousCloseException exception = new AsynchronousCloseException();
 		when(writeChannel.write(any())).thenThrow(exception);
-		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, telnetClient);
 
 		writeRunnable.run();
 
@@ -107,7 +117,7 @@ public class WriteRunnableTest {
 		String additionalNote = "think This one also deals with shutdown()!";
 		ClosedByInterruptException exception = new ClosedByInterruptException();
 		when(writeChannel.write(any())).thenThrow(exception);
-		writeRunnable = new WriteRunnable(additionalNote, writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable(additionalNote, writeCallback, telnetClient);
 
 		writeRunnable.run();
 
@@ -119,7 +129,7 @@ public class WriteRunnableTest {
 	public void testCallCallbackWithExceptionWhenIOExceptionOccurs() throws Exception {
 		IOException exception = new IOException();
 		when(writeChannel.write(any())).thenThrow(exception);
-		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, writeChannel);
+		writeRunnable = new WriteRunnable("think Exceptions!", writeCallback, telnetClient);
 
 		writeRunnable.run();
 
