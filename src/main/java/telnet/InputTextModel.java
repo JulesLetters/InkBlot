@@ -1,35 +1,25 @@
 package telnet;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import com.google.common.eventbus.Subscribe;
 
 import events.EnterPressedEvent;
 
 public class InputTextModel {
 
-	private TelnetClientWrapper telnetClient;
-	private OutputStream outputStream;
+	private TelnetLineWriter telnetLineWriter;
 
 	public InputTextModel() {
-		this(new TelnetClientFactory());
+		this(new TelnetLineWriterSingleton().getInstance());
 	}
 
-	protected InputTextModel(TelnetClientFactory telnetClientFactory) {
-		telnetClient = telnetClientFactory.getInstance();
-		outputStream = telnetClient.getOutputStream();
+	InputTextModel(TelnetLineWriter telnetLineWriter) {
+		this.telnetLineWriter = telnetLineWriter;
 	}
 
 	@Subscribe
 	public void onEnterPressed(EnterPressedEvent e) {
-		try {
-			String text = e.getText() + "\n";
-			outputStream.write(text.getBytes());
-			outputStream.flush();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		telnetLineWriter.write(e.getText(), (maybeException) -> {
+		});
 	}
 
 }

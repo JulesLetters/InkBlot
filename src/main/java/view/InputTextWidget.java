@@ -19,9 +19,7 @@ public class InputTextWidget {
 	}
 
 	private void postAndClearText() {
-		if (eventBus != null) {
-			eventBus.post(new EnterPressedEvent(text.getText()));
-		}
+		eventBus.post(new EnterPressedEvent(text.getText()));
 		new JavaFXThreadRunner().runLater(() -> text.setText(""));
 	}
 

@@ -1,21 +1,17 @@
 package telnet;
 
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import telnet.InputTextModel;
-import telnet.TelnetClientFactory;
-import telnet.TelnetClientWrapper;
 
 import com.google.common.eventbus.EventBus;
 
@@ -24,11 +20,9 @@ import events.EnterPressedEvent;
 public class InputTextModelTest {
 
 	@Mock
-	private TelnetClientFactory telnetClientFactory;
-	@Mock
-	private TelnetClientWrapper telnetClient;
-	@Mock
-	private OutputStream outputStream;
+	private TelnetLineWriter telnetLineWriter;
+	@Captor
+	private ArgumentCaptor<IWriteCallback> writeCallbackCaptor;
 
 	private EventBus eventBus = new EventBus();
 	private InputTextModel model;
@@ -36,23 +30,18 @@ public class InputTextModelTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		when(telnetClientFactory.getInstance()).thenReturn(telnetClient);
-		when(telnetClient.getOutputStream()).thenReturn(outputStream);
-		model = new InputTextModel(telnetClientFactory);
+		model = new InputTextModel(telnetLineWriter);
 	}
 
 	@Test
 	public void testOnEnterPressedSendToTelnet() throws IOException {
 		eventBus.register(model);
 		String text = "Hello";
-		String textWritten = text + "\n";
-
-		verifyZeroInteractions(outputStream);
+		verifyZeroInteractions(telnetLineWriter);
 
 		eventBus.post(new EnterPressedEvent(text));
 
-		InOrder inOrder = Mockito.inOrder(outputStream);
-		inOrder.verify(outputStream).write(textWritten.getBytes());
-		inOrder.verify(outputStream).flush();
+		verify(telnetLineWriter).write(eq(text), writeCallbackCaptor.capture());
 	}
+
 }
