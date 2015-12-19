@@ -24,6 +24,7 @@ public class TestRunner {
 
 	public void runTests(List<ParsedTestUnit> parsedTestList) {
 		for (ParsedTestUnit parsedTestUnit : parsedTestList) {
+			lineBuffer.clearText();
 			singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit);
 		}
 	}

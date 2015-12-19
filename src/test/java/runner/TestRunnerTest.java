@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import parser.ParsedTestUnit;
@@ -55,6 +57,20 @@ public class TestRunnerTest {
 
 		verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit1);
 		verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit2);
+	}
+
+	@Test
+	public void testClearBufferBeforeEachTestIsRun() throws Exception {
+		parsedTestList.add(parsedTestUnit1);
+		parsedTestList.add(parsedTestUnit2);
+
+		testRunner.runTests(parsedTestList);
+
+		InOrder inOrder = Mockito.inOrder(lineBuffer, singleTestRunner);
+		inOrder.verify(lineBuffer).clearText();
+		inOrder.verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit1);
+		inOrder.verify(lineBuffer).clearText();
+		inOrder.verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit2);
 	}
 
 }
