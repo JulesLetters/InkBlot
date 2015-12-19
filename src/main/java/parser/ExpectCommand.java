@@ -1,6 +1,7 @@
 package parser;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import loader.TestUnitCommand;
 import runner.CommandResult;
@@ -26,8 +27,8 @@ public class ExpectCommand implements IParsedTestCommand {
 	@Override
 	public void execute(LineBuffer lineBuffer, TelnetLineWriter lineWriter, CommandResultListener listener) {
 		textChangeListener = () -> {
-			String patternString = "(.*\n)?" + commandArgument + "(\n.*)?";
-			if (lineBuffer.getText().matches(patternString)) {
+			String wantedLine = "(?<=^|\n)" + Pattern.quote(commandArgument) + "(?=\n|$)";
+			if (Pattern.compile(wantedLine).matcher(lineBuffer.getText()).find()) {
 				listener.setStatus(new CommandResult(CommandResult.SUCCESS));
 			}
 		};

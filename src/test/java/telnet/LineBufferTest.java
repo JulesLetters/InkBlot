@@ -113,4 +113,16 @@ public class LineBufferTest {
 		verify(listener2).textChanged();
 	}
 
+	@Test
+	public void testCarriageReturnIsStrippedFromInput() throws Exception {
+		String helloWithReturn1 = "Hello\r";
+		String helloWithReturn2 = "\rHello";
+		String expectedString = "Hello\nHello";
+
+		lineBuffer.lineReceived(helloWithReturn1);
+		lineBuffer.lineReceived(helloWithReturn2);
+
+		assertEquals(expectedString, lineBuffer.getText());
+	}
+
 }

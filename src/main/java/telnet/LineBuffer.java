@@ -14,15 +14,15 @@ public class LineBuffer implements ILineReaderListener {
 
 	@Override
 	public void lineReceived(String string) {
-		if (buffer == "") {
-			buffer = string;
+		String stringToAppend = string.replaceAll("\r", "");
+
+		if (buffer.isEmpty()) {
+			buffer = stringToAppend;
 		} else {
-			buffer = buffer + "\n" + string;
+			buffer = buffer + "\n" + stringToAppend;
 		}
 
-		for (ITextChangeListener listener : listenerList) {
-			listener.textChanged();
-		}
+		listenerList.forEach(listener -> listener.textChanged());
 	}
 
 	public String getText() {

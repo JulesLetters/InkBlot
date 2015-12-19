@@ -79,6 +79,30 @@ public class ExpectCommandTest {
 	}
 
 	@Test
+	public void testWhenArgumentFoundAtStartOfBufferSetSuccessOnListener() throws Exception {
+		TestUnitCommand command = new TestUnitCommand("expect ABC");
+		ExpectCommand expectCommand = new ExpectCommand(command);
+		when(lineBuffer.getText()).thenReturn("ABC\nQRS");
+
+		expectCommand.execute(lineBuffer, null, listener);
+
+		verify(listener).setStatus(commandResultCaptor.capture());
+		assertEquals(CommandResult.SUCCESS, commandResultCaptor.getValue().getStatus());
+	}
+
+	@Test
+	public void testWhenArgumentFoundAtEndOfBufferSetSuccessOnListener() throws Exception {
+		TestUnitCommand command = new TestUnitCommand("expect ABC");
+		ExpectCommand expectCommand = new ExpectCommand(command);
+		when(lineBuffer.getText()).thenReturn("XYZ\nABC");
+
+		expectCommand.execute(lineBuffer, null, listener);
+
+		verify(listener).setStatus(commandResultCaptor.capture());
+		assertEquals(CommandResult.SUCCESS, commandResultCaptor.getValue().getStatus());
+	}
+
+	@Test
 	public void testWhenWholeArgumentNotFoundAnywhereDoNotSetSuccess() throws Exception {
 		TestUnitCommand command = new TestUnitCommand("expect ABC");
 		ExpectCommand expectCommand = new ExpectCommand(command);
@@ -124,6 +148,18 @@ public class ExpectCommandTest {
 		textChangeListener.textChanged();
 
 		verify(listener, never()).setStatus(commandResultCaptor.capture());
+	}
+
+	@Test
+	public void testArgumentWithSpecialCharacters() throws Exception {
+		TestUnitCommand command = new TestUnitCommand("expect (a(bc");
+		ExpectCommand expectCommand = new ExpectCommand(command);
+		when(lineBuffer.getText()).thenReturn("(a(bc");
+
+		expectCommand.execute(lineBuffer, null, listener);
+
+		verify(listener).setStatus(commandResultCaptor.capture());
+		assertEquals(CommandResult.SUCCESS, commandResultCaptor.getValue().getStatus());
 	}
 
 	@Test
