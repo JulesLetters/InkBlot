@@ -17,10 +17,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import telnet.ILineReaderListener;
-import telnet.TelnetClientWrapper;
-import telnet.TelnetLineReader;
-
 public class TelnetLineReaderTest {
 
 	@Mock
@@ -121,6 +117,25 @@ public class TelnetLineReaderTest {
 		telnetLineReader.telnetInputAvailable();
 
 		verify(listener).lineReceived("xyz");
+	}
+
+	@Test
+	public void testListenersNotifiedIfNewlineIsInMiddleOfInput() throws Exception {
+		setupInputStream("a\nb");
+		telnetLineReader.addListener(listener);
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener).lineReceived("a");
+	}
+
+	@Test
+	public void testListenersNotifiedSeparatelyForMultipleNewlines() throws Exception {
+		setupInputStream("a\nb\n");
+		telnetLineReader.addListener(listener);
+		telnetLineReader.telnetInputAvailable();
+
+		verify(listener).lineReceived("a");
+		verify(listener).lineReceived("b");
 	}
 
 	private void setupInputStream(final String stringToBeRead) {

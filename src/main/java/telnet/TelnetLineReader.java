@@ -44,16 +44,16 @@ public class TelnetLineReader implements TelnetInputListener, ILineReader {
 
 			buffer = buffer.concat(readString);
 
-			if (readString.endsWith("\n")) {
+			while (buffer.contains("\n")) {
+				int newlineIndex = buffer.indexOf("\n");
+				String withoutNewline = buffer.substring(0, newlineIndex);
+				buffer = buffer.substring(newlineIndex + 1);
 				for (ILineReaderListener listener : listenerList) {
-					String withoutNewline = buffer.substring(0, buffer.length() - 1);
 					listener.lineReceived(withoutNewline);
 				}
-				buffer = "";
 			}
 
 		}
 
 	}
-
 }
