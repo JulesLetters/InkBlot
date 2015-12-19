@@ -1,24 +1,20 @@
 tests: 
   - name: CompleteExampleTest
     commands: [
-      "Command lines enclosed in quotes.",
-      "Delimit lines with commas.",
-      "Use \\n \n for newlines.",
-      "More documentation to follow when I make commands!"
+      "output think Command lines may be enclosed in quotes.",
+      "output think Delimit lines with commas.",
+      "output think Use \\%R%Rfor newlines.",
+      "expect Command lines may be enclosed in quotes.",
+      "expect Delimit lines with commands.",
+      "expect Use \\%R",
+      "expect for newlines."
     ]
   - name: CommaTest
     commands: [
-      "Comma , In text,\nMerged with this line",
-      Comma at end,
-      End
+      "output think Comma, in text, is no problem.",
+      output think Command without quotes okay,
+      output think Cannot no-quote with comma at end,
+      "expect Comma, in text, is no problem.",
+      "expect Command without quotes okay",
+      "expect Cannot no-quote with comma at end"
     ]
-  - name: MultiLineTest
-    commands: [
-      MultiMatch Blah
-       
-      Blah
-       
-       
-      Blah,
-      Line Two
-    ] 
