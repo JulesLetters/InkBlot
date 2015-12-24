@@ -25,7 +25,7 @@ public class TestListPresenter {
 
 	@Subscribe
 	public void modelUpdated(TestListModelUpdatedEvent event) {
-		testListView.setInput(testListModel.getTestNames());
+		testListView.setInput(testListModel.getTests());
 	}
 
 	@Subscribe

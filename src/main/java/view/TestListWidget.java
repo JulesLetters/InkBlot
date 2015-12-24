@@ -20,7 +20,7 @@ public class TestListWidget {
 		gridPane.add(runAllButton, 0, 1);
 
 		GuavaEventBus eventBus = new GuavaEventBus();
-		runAllButton.setOnAction((event) -> eventBus.post(new RunButtonClicked()));
+		runAllButton.setOnAction(event -> eventBus.post(new RunButtonClicked()));
 		TestListModel testListModel = new TestListModel(eventBus);
 
 		new TestListPresenter(testListView, testListModel, eventBus);

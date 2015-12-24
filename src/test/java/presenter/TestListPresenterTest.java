@@ -3,12 +3,13 @@ package presenter;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import view.TestItem;
 import view.TestListView;
 import application.GuavaEventBus;
 import application.IEventBus;
@@ -52,13 +54,13 @@ public class TestListPresenterTest {
 
 	@Test
 	public void testEventFromModelUpdatesView() throws Exception {
-		List<String> expectedList = Arrays.asList("A", "B", "C");
-		when(testListModel.getTestNames()).thenReturn(expectedList);
+		List<TestItem> expectedItems = Collections.singletonList(mock(TestItem.class));
+		when(testListModel.getTests()).thenReturn(expectedItems);
 		new TestListPresenter(testListView, testListModel, eventBus);
 
 		eventBus.post(new TestListModelUpdatedEvent());
 
-		verify(testListView).setInput(expectedList);
+		verify(testListView).setInput(expectedItems);
 	}
 
 	@Test
@@ -71,12 +73,12 @@ public class TestListPresenterTest {
 			}
 		}).when(testListModel).loadFile(any(File.class));
 
-		List<String> expectedList = Arrays.asList("D", "E", "F");
-		when(testListModel.getTestNames()).thenReturn(expectedList);
+		List<TestItem> expectedItems = Collections.singletonList(mock(TestItem.class));
+		when(testListModel.getTests()).thenReturn(expectedItems);
 
 		new TestListPresenter(testListView, testListModel, eventBus);
 
-		verify(testListView).setInput(expectedList);
+		verify(testListView).setInput(expectedItems);
 	}
 
 	@Test

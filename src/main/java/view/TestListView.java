@@ -3,24 +3,35 @@ package view;
 import java.util.Collection;
 
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 
 public class TestListView {
 
-	private TreeView<String> treeView = new TreeView<>();
+	private TreeTableView<TestItem> treeTableView = new TreeTableView<>();
 
-	public void setInput(final Collection<String> testNameList) {
-		TreeItem<String> rootItem = new TreeItem<String>("Tests");
+	public void setInput(final Collection<TestItem> testItems) {
+		TreeItem<TestItem> rootItem = new TreeItem<>(new TestItem("Tests", ""));
 		rootItem.setExpanded(true);
-		for (String testName : testNameList) {
-			TreeItem<String> item = new TreeItem<String>(testName);
-			rootItem.getChildren().add(item);
+
+		treeTableView.setRoot(rootItem);
+
+		for (TestItem testItem : testItems) {
+			rootItem.getChildren().add(new TreeItem<>(testItem));
 		}
-		treeView.setRoot(rootItem);
+
+		TreeTableColumn<TestItem, String> statusColumn = new TreeTableColumn<>("Status");
+		statusColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("status"));
+
+		TreeTableColumn<TestItem, String> nameColumn = new TreeTableColumn<>("Test Name");
+		nameColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+
+		treeTableView.getColumns().setAll(statusColumn, nameColumn);
 	}
 
-	public TreeView<String> getNode() {
-		return treeView;
+	public TreeTableView<TestItem> getNode() {
+		return treeTableView;
 	}
 
 }
