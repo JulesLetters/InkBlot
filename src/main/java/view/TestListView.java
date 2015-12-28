@@ -1,6 +1,8 @@
 package view;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -27,7 +29,8 @@ public class TestListView {
 		TreeTableColumn<TestItem, String> nameColumn = new TreeTableColumn<>("Test Name");
 		nameColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 
-		treeTableView.getColumns().setAll(statusColumn, nameColumn);
+		List<TreeTableColumn<TestItem, String>> columns = Arrays.asList(statusColumn, nameColumn);
+		treeTableView.getColumns().setAll(columns);
 	}
 
 	public TreeTableView<TestItem> getNode() {
