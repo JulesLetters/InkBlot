@@ -5,8 +5,8 @@ tests:
       "output think Delimit lines with commas.",
       "output think Use \\%R%Rfor newlines.",
       "expect Command lines may be enclosed in quotes.",
-      "expect Delimit lines with commands.",
-      "expect Use \\%R",
+      "expect Delimit lines with commas.",
+      "expect Use %R",
       "expect for newlines."
     ]
   - name: CommaTest
@@ -17,4 +17,9 @@ tests:
       "expect Comma, in text, is no problem.",
       "expect Command without quotes okay",
       "expect Cannot no-quote with comma at end"
+    ]
+  - name: AlterableTest
+    commands: [
+      "output think u(Test/Test)",
+      "expect 1"
     ]
