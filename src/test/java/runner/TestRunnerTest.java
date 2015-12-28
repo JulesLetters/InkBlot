@@ -1,6 +1,8 @@
 package runner;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,8 @@ public class TestRunnerTest {
 	private ParsedTestUnit parsedTestUnit1;
 	@Mock
 	private ParsedTestUnit parsedTestUnit2;
+	@Mock
+	private ITesterCallback testerCallback;
 
 	private List<ParsedTestUnit> parsedTestList = new ArrayList<>();
 
@@ -43,7 +47,7 @@ public class TestRunnerTest {
 	public void testSingleTestRunnerIsInvoked() throws Exception {
 		parsedTestList.add(parsedTestUnit1);
 
-		testRunner.runTests(parsedTestList);
+		testRunner.runTests(parsedTestList, testerCallback);
 
 		verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit1);
 	}
@@ -53,7 +57,7 @@ public class TestRunnerTest {
 		parsedTestList.add(parsedTestUnit1);
 		parsedTestList.add(parsedTestUnit2);
 
-		testRunner.runTests(parsedTestList);
+		testRunner.runTests(parsedTestList, testerCallback);
 
 		verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit1);
 		verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit2);
@@ -64,13 +68,39 @@ public class TestRunnerTest {
 		parsedTestList.add(parsedTestUnit1);
 		parsedTestList.add(parsedTestUnit2);
 
-		testRunner.runTests(parsedTestList);
+		testRunner.runTests(parsedTestList, testerCallback);
 
 		InOrder inOrder = Mockito.inOrder(lineBuffer, singleTestRunner);
 		inOrder.verify(lineBuffer).clearText();
 		inOrder.verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit1);
 		inOrder.verify(lineBuffer).clearText();
 		inOrder.verify(singleTestRunner).runTest(lineBuffer, lineWriter, parsedTestUnit2);
+	}
+
+	@Test
+	public void invokeCallbackAfterTestCompletes() throws Exception {
+		TestResult testResult = mock(TestResult.class);
+		when(singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit1)).thenReturn(testResult);
+		parsedTestList.add(parsedTestUnit1);
+
+		testRunner.runTests(parsedTestList, testerCallback);
+
+		verify(testerCallback).testCompleted(parsedTestUnit1, testResult);
+	}
+
+	@Test
+	public void invokeCallbackAfterEachTestCompletes() throws Exception {
+		TestResult testResult1 = mock(TestResult.class);
+		TestResult testResult2 = mock(TestResult.class);
+		when(singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit1)).thenReturn(testResult1);
+		when(singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit2)).thenReturn(testResult2);
+		parsedTestList.add(parsedTestUnit1);
+		parsedTestList.add(parsedTestUnit2);
+
+		testRunner.runTests(parsedTestList, testerCallback);
+
+		verify(testerCallback).testCompleted(parsedTestUnit1, testResult1);
+		verify(testerCallback).testCompleted(parsedTestUnit2, testResult2);
 	}
 
 }

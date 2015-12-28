@@ -22,10 +22,11 @@ public class TestRunner {
 		this.lineWriter = lineWriter;
 	}
 
-	public void runTests(List<ParsedTestUnit> parsedTestList) {
+	public void runTests(List<ParsedTestUnit> parsedTestList, ITesterCallback callback) {
 		for (ParsedTestUnit parsedTestUnit : parsedTestList) {
 			lineBuffer.clearText();
-			singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit);
+			TestResult result = singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit);
+			callback.testCompleted(parsedTestUnit, result);
 		}
 	}
 

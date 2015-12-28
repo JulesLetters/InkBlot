@@ -11,9 +11,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import model.ParsedTestModel;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +27,16 @@ import parser.IParserCallback;
 import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
 import parser.TestFileParser;
+import runner.ITesterCallback;
+import runner.TestResult;
 import runner.TestRunner;
 import view.TestItem;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModelTest {
 
+	@Mock
+	private ParsedTestModel parsedTestModel;
 	@Mock
 	private ThreadRunner threadRunner;
 	@Mock
@@ -46,37 +51,30 @@ public class TestListModelTest {
 	private ArgumentCaptor<IParserCallback> parserCallbackCaptor;
 	@Captor
 	private ArgumentCaptor<Runnable> runnableCaptor;
+	@Captor
+	private ArgumentCaptor<ITesterCallback> testerCallbackCaptor;
 
 	private TestListModel model;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		model = new TestListModel(eventBus, parser, threadRunner, testRunner);
+		model = new TestListModel(parsedTestModel, eventBus, parser, threadRunner, testRunner);
 	}
 
 	@Test
-	public void testNoFilesLoaded() {
-		assertEquals(Collections.EMPTY_LIST, model.getTests());
+	public void getTestsReturnsTestResultsFromModel() {
+		List<TestItem> expectedResults = Collections.singletonList(mock(TestItem.class));
+		when(parsedTestModel.getTestResults()).thenReturn(expectedResults);
+
+		List<TestItem> actualResults = model.getTests();
+
+		assertEquals(expectedResults, actualResults);
 	}
 
 	@Test
-	public void testOnLoadFileSubmitRunnableToThreadRunner() {
-		verify(threadRunner, never()).run(any(Runnable.class), any());
-
-		model.loadFile(file);
-
-		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
-	}
-
-	@Test
-	public void testWhenParserCompletesTestNamesAreAddedToList() {
+	public void whenParserCompletesTestNamesAreAddedToList() {
 		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
-		ParsedTestUnit parsedTestUnit1 = mock(ParsedTestUnit.class);
-		ParsedTestUnit parsedTestUnit2 = mock(ParsedTestUnit.class);
-		when(parsedTestFile.getTests()).thenReturn(Arrays.asList(parsedTestUnit1, parsedTestUnit2));
-		when(parsedTestUnit1.getName()).thenReturn("Larry");
-		when(parsedTestUnit2.getName()).thenReturn("Moe");
 
 		model.loadFile(file);
 
@@ -84,52 +82,47 @@ public class TestListModelTest {
 		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
 		runnableCaptor.getValue().run();
 
+		verify(parsedTestModel, never()).addFile(any(ParsedTestFile.class));
 		verify(parser).parse(eq(file), parserCallbackCaptor.capture());
-		IParserCallback value = parserCallbackCaptor.getValue();
-		value.parseCompleted(parsedTestFile);
+		parserCallbackCaptor.getValue().parseCompleted(parsedTestFile);
 
-		List<TestItem> tests = model.getTests();
-
-		assertEquals(2, tests.size());
-		assertEquals("Larry", tests.get(0).getName());
-		assertEquals("Moe", tests.get(1).getName());
+		verify(parsedTestModel).addFile(parsedTestFile);
 	}
 
 	@Test
-	public void testWhenParserCompletesEventIsPosted() {
-		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
-
+	public void whenParserCompletesEventIsPosted() {
 		model.loadFile(file);
+
 		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
 		runnableCaptor.getValue().run();
 		verify(parser).parse(eq(file), parserCallbackCaptor.capture());
 
 		verifyZeroInteractions(eventBus);
-		parserCallbackCaptor.getValue().parseCompleted(parsedTestFile);
+
+		parserCallbackCaptor.getValue().parseCompleted(mock(ParsedTestFile.class));
+
 		verify(eventBus).post(isA(TestListModelUpdatedEvent.class));
 	}
 
 	@Test
-	public void testRunAllTestsCallsTestRunnerWithParsedTests() throws Exception {
-		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
-		ParsedTestUnit parsedTestUnit1 = mock(ParsedTestUnit.class);
-		ParsedTestUnit parsedTestUnit2 = mock(ParsedTestUnit.class);
-		List<ParsedTestUnit> expectedTests = Arrays.asList(parsedTestUnit1, parsedTestUnit2);
-		when(parsedTestFile.getTests()).thenReturn(expectedTests);
-
-		model.loadFile(file);
-		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
-		runnableCaptor.getValue().run();
-		verify(parser).parse(eq(file), parserCallbackCaptor.capture());
-		parserCallbackCaptor.getValue().parseCompleted(parsedTestFile);
+	public void whenTestRunnerCompletesTestSetStatusOnModel() throws Exception {
+		ParsedTestUnit parsedTestUnit = mock(ParsedTestUnit.class);
+		TestResult testResult = mock(TestResult.class);
+		List<ParsedTestUnit> expectedTests = Collections.singletonList(parsedTestUnit);
+		when(parsedTestModel.getTests()).thenReturn(expectedTests);
 
 		model.runAllTests();
 
-		verify(testRunner, never()).runTests(any());
+		verifyZeroInteractions(testRunner);
 		verify(threadRunner).run(runnableCaptor.capture(), eq("Test Runner"));
 
 		runnableCaptor.getValue().run();
 
-		verify(testRunner).runTests(expectedTests);
+		verify(testRunner).runTests(eq(expectedTests), testerCallbackCaptor.capture());
+		verify(parsedTestModel, never()).setUnitStatus(any(), any());
+		testerCallbackCaptor.getValue().testCompleted(parsedTestUnit, testResult);
+
+		verify(parsedTestModel).setUnitStatus(parsedTestUnit, testResult);
 	}
+
 }
