@@ -1,0 +1,24 @@
+tests: 
+  - name: CompleteExampleTest
+    commands: [
+      "Command lines enclosed in quotes.",
+      "Delimit lines with commas.",
+      "Use \\n \n for newlines.",
+      "More documentation to follow when I make commands!"
+    ]
+  - name: CommaTest
+    commands: [
+      "Comma , In text,\nMerged with this line",
+      Comma at end,
+      End
+    ]
+  - name: MultiLineTest
+    commands: [
+      MultiMatch Blah
+       
+      Blah
+       
+       
+      Blah,
+      Line Two
+    ] 
