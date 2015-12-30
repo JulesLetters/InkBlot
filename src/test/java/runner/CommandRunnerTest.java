@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 
+import application.ExecutorServiceFactory;
 import parser.IParsedTestCommand;
 import telnet.LineBuffer;
 import telnet.TelnetLineWriter;
@@ -46,6 +47,8 @@ public class CommandRunnerTest {
 	private ScheduledFuture future;
 	@Captor
 	private ArgumentCaptor<Runnable> runnableCaptor;
+	@Mock
+	private ExecutorServiceFactory executorServiceFactory;
 
 	private CommandRunner commandRunner;
 
@@ -54,9 +57,11 @@ public class CommandRunnerTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		when(listenerFactory.create()).thenReturn(commandResultListener);
+		when(executorServiceFactory.newSingleThreadScheduledExecutor(CommandRunner.THREAD_NAME)).thenReturn(
+				scheduledExecutorService);
 		when(scheduledExecutorService.schedule(runnableCaptor.capture(), eq(3000L), eq(TimeUnit.MILLISECONDS)))
 				.thenReturn(future);
-		commandRunner = new CommandRunner(scheduledExecutorService, listenerFactory);
+		commandRunner = new CommandRunner(executorServiceFactory, listenerFactory);
 	}
 
 	@Test

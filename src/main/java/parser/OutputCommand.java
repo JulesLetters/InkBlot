@@ -5,6 +5,7 @@ import java.util.Optional;
 import loader.TestUnitCommand;
 import runner.CommandResult;
 import runner.CommandResultListener;
+import telnet.IWriteCallback;
 import telnet.LineBuffer;
 import telnet.TelnetLineWriter;
 
@@ -23,10 +24,11 @@ public class OutputCommand implements IParsedTestCommand {
 
 	@Override
 	public void execute(LineBuffer lineBuffer, TelnetLineWriter lineWriter, CommandResultListener listener) {
-		lineWriter.write(commandArgument, (maybeException) -> {
+		IWriteCallback writeCallback = maybeException -> {
 			String result = maybeException.isPresent() ? CommandResult.EXCEPTION : CommandResult.SUCCESS;
 			listener.setStatus(new CommandResult(result));
-		});
+		};
+		lineWriter.write(commandArgument, writeCallback);
 	}
 
 	@Override

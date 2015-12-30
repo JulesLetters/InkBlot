@@ -21,6 +21,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import application.ExecutorServiceFactory;
+
 public class TelnetLineWriterTest {
 
 	@Mock
@@ -43,7 +45,8 @@ public class TelnetLineWriterTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		when(executorServiceFactory.newSingleThreadExecutor()).thenReturn(executorService1, executorService2);
+		when(executorServiceFactory.newSingleThreadExecutor(TelnetLineWriter.THREAD_NAME)).thenReturn(executorService1,
+				executorService2);
 		lineWriter = new TelnetLineWriter(telnetClient, executorServiceFactory);
 	}
 
