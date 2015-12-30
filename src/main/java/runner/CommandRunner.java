@@ -1,27 +1,28 @@
 package runner;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import application.ExecutorServiceFactory;
 import parser.IParsedTestCommand;
 import telnet.LineBuffer;
 import telnet.TelnetLineWriter;
 
 public class CommandRunner {
 
+	static final String THREAD_NAME = "Command Runner";
 	private static final long COMMAND_TIMEOUT_MILLIS = 3000;
 	private ScheduledExecutorService scheduledExecutorService;
 	private CommandRunnerListenerFactory commandRunnerListenerFactory;
 
 	public CommandRunner() {
-		this(Executors.newSingleThreadScheduledExecutor(), new CommandRunnerListenerFactory());
+		this(new ExecutorServiceFactory(), new CommandRunnerListenerFactory());
 	}
 
-	CommandRunner(ScheduledExecutorService scheduledExecutorService,
+	CommandRunner(ExecutorServiceFactory executorServiceFactory,
 			CommandRunnerListenerFactory commandRunnerListenerFactory) {
-		this.scheduledExecutorService = scheduledExecutorService;
+		this.scheduledExecutorService = executorServiceFactory.newSingleThreadScheduledExecutor(THREAD_NAME);
 		this.commandRunnerListenerFactory = commandRunnerListenerFactory;
 	}
 
