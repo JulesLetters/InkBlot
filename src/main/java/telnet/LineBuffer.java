@@ -1,11 +1,11 @@
 package telnet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LineBuffer implements ILineReaderListener {
 
-	private List<ITextChangeListener> listenerList = new ArrayList<>();
+	private List<ITextChangeListener> listenerList = new CopyOnWriteArrayList<>();
 	private String buffer = "";
 
 	public void setLineReader(ILineReader lineReader) {
