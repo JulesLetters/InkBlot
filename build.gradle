@@ -20,11 +20,11 @@ repositories {
 
 dependencies {
     compile 'org.yaml:snakeyaml:1.14',
-	        'com.google.guava:guava:18.0',
-			'commons-net:commons-net:3.3'
-			
-	testCompile 'junit:junit:4.11',
-				'org.mockito:mockito-all:1.9.5'  
+            'com.google.guava:guava:18.0',
+            'commons-net:commons-net:3.3'
+
+    testCompile 'junit:junit:4.11',
+                'org.mockito:mockito-all:1.9.5'  
 }
 
 task wrapper(type: Wrapper) {
