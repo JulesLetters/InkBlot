@@ -1,5 +1,8 @@
 package view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -7,10 +10,16 @@ public class TestItem {
 
 	private StringProperty name;
 	private StringProperty status;
+	private List<TestItem> children;
 
 	public TestItem(String name, String status) {
+		this(name, status, new ArrayList<>());
+	}
+
+	public TestItem(String name, String status, List<TestItem> children) {
 		setName(name);
 		setStatus(status);
+		this.children = children;
 	}
 
 	public void setName(String name) {
@@ -43,4 +52,7 @@ public class TestItem {
 		return status;
 	}
 
+	public List<TestItem> getChildren() {
+		return children;
+	}
 }

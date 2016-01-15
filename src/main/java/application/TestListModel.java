@@ -12,7 +12,6 @@ import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
 import runner.TestRunnerFactory;
-import view.TestItem;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModel implements IParserCallback, ITesterCallback {
@@ -38,11 +37,12 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 		this.parsedTestModel = parsedTestModel;
 	}
 
-	public List<TestItem> getTests() {
-		return parsedTestModel.getTestResults();
+	public List<ParsedTestFile> getParsedTestFiles() {
+		return parsedTestModel.getParsedTestFiles();
 	}
 
 	public void loadFile(final File file) {
+		// This will need to be a single-threaded executor service.
 		threadRunner.run(() -> parser.parse(file, TestListModel.this), "File Parser");
 	}
 
@@ -59,6 +59,7 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 	@Override
 	public void testCompleted(ParsedTestUnit parsedTestUnit, TestResult result) {
 		parsedTestModel.setUnitStatus(parsedTestUnit, result);
+		// fire event 'status changed' (for presenter to receive)
 	}
 
 }

@@ -1,0 +1,6 @@
+tests: 
+  - name: SimpleTest
+    commands: [
+      "output think Test",
+      "expect Test"
+    ]
