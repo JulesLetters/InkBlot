@@ -30,7 +30,6 @@ import parser.TestFileParser;
 import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
-import view.TestItem;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModelTest {
@@ -64,10 +63,10 @@ public class TestListModelTest {
 
 	@Test
 	public void getTestsReturnsTestResultsFromModel() {
-		List<TestItem> expectedResults = Collections.singletonList(mock(TestItem.class));
-		when(parsedTestModel.getTestResults()).thenReturn(expectedResults);
+		List<ParsedTestUnit> expectedResults = Collections.singletonList(mock(ParsedTestUnit.class));
+		when(parsedTestModel.getTests()).thenReturn(expectedResults);
 
-		List<TestItem> actualResults = model.getTests();
+		List<ParsedTestUnit> actualResults = model.getTests();
 
 		assertEquals(expectedResults, actualResults);
 	}

@@ -13,8 +13,6 @@ import org.mockito.MockitoAnnotations;
 
 import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
-import runner.TestResult;
-import view.TestItem;
 
 public class ParsedTestModelTest {
 
@@ -43,15 +41,10 @@ public class ParsedTestModelTest {
 		parsedTestModel.addFile(parsedTestFile);
 
 		List<ParsedTestUnit> tests = parsedTestModel.getTests();
-		List<TestItem> testResults = parsedTestModel.getTestResults();
 
 		assertEquals(2, tests.size());
 		assertEquals(parsedTestUnit1, tests.get(0));
 		assertEquals(parsedTestUnit2, tests.get(1));
-
-		assertEquals(2, testResults.size());
-		assertEquals("Larry", testResults.get(0).getName());
-		assertEquals("Jacob", testResults.get(1).getName());
 	}
 
 	@Test
@@ -62,14 +55,15 @@ public class ParsedTestModelTest {
 
 		parsedTestModel.addFile(parsedTestFile);
 
-		List<TestItem> testResults = parsedTestModel.getTestResults();
-
-		assertEquals(1, testResults.size());
-		assertEquals(TestResult.LOADED, testResults.get(0).getStatus());
-
-		parsedTestModel.setUnitStatus(parsedTestUnit1, new TestResult(TestResult.SUCCESS));
-
-		assertEquals(TestResult.SUCCESS, testResults.get(0).getStatus());
+		// List<TestItem> testResults = parsedTestModel.getTestResults();
+		//
+		// assertEquals(1, testResults.size());
+		// assertEquals(TestResult.LOADED, testResults.get(0).getStatus());
+		//
+		// parsedTestModel.setUnitStatus(parsedTestUnit1, new
+		// TestResult(TestResult.SUCCESS));
+		//
+		// assertEquals(TestResult.SUCCESS, testResults.get(0).getStatus());
 	}
 
 }

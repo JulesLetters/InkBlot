@@ -12,7 +12,6 @@ import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
 import runner.TestRunnerFactory;
-import view.TestItem;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModel implements IParserCallback, ITesterCallback {
@@ -38,8 +37,8 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 		this.parsedTestModel = parsedTestModel;
 	}
 
-	public List<TestItem> getTests() {
-		return parsedTestModel.getTestResults();
+	public List<ParsedTestUnit> getTests() {
+		return parsedTestModel.getTests();
 	}
 
 	public void loadFile(final File file) {
