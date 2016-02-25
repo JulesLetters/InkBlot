@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import model.ParsedTestModel;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,12 +24,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import parser.ParsedTestUnit;
+import runner.TestResult;
 import view.TestItem;
 import view.TestListView;
 import application.GuavaEventBus;
 import application.IEventBus;
 import application.TestListModel;
 import events.RunButtonClicked;
+import events.TestCompletedEvent;
 import events.TestListModelUpdatedEvent;
 
 public class TestListPresenterTest {
@@ -36,6 +40,8 @@ public class TestListPresenterTest {
 	private TestListView testListView;
 	@Mock
 	private TestListModel testListModel;
+	@Mock
+	private ParsedTestModel parsedTestModel;
 	@Mock
 	private TestItemFactory testItemFactory;
 
@@ -50,7 +56,7 @@ public class TestListPresenterTest {
 	public void onConstructionModelLoadsFile() {
 		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
 
-		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
 		verify(testListModel).loadFile(fileCaptor.capture());
 		assertEquals("Tests.txt", fileCaptor.getValue().getName());
@@ -60,13 +66,13 @@ public class TestListPresenterTest {
 	public void testEventFromModelUpdatesView() throws Exception {
 		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
 		ParsedTestUnit unit2 = mock(ParsedTestUnit.class);
-		when(testListModel.getTests()).thenReturn(Arrays.asList(unit1, unit2));
+		when(parsedTestModel.getTests()).thenReturn(Arrays.asList(unit1, unit2));
 		TestItem testItem1 = mock(TestItem.class);
 		TestItem testItem2 = mock(TestItem.class);
 		when(testItemFactory.create(unit1)).thenReturn(testItem1);
 		when(testItemFactory.create(unit2)).thenReturn(testItem2);
 
-		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
 		eventBus.post(new TestListModelUpdatedEvent());
 
@@ -75,9 +81,9 @@ public class TestListPresenterTest {
 
 	@Test
 	public void emptyModelSendsEmptyCollectionToView() throws Exception {
-		when(testListModel.getTests()).thenReturn(Collections.emptyList());
+		when(parsedTestModel.getTests()).thenReturn(Collections.emptyList());
 
-		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
 		eventBus.post(new TestListModelUpdatedEvent());
 
@@ -96,23 +102,35 @@ public class TestListPresenterTest {
 
 		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
 		List<ParsedTestUnit> expectedItems = Collections.singletonList(unit1);
-		when(testListModel.getTests()).thenReturn(expectedItems);
+		when(parsedTestModel.getTests()).thenReturn(expectedItems);
 		TestItem testItem1 = mock(TestItem.class);
 		when(testItemFactory.create(unit1)).thenReturn(testItem1);
 
-		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
 		verify(testListView).setInput(Arrays.asList(testItem1));
 	}
 
 	@Test
 	public void testWhenRunButtonClickedMakeModelRunTests() throws Exception {
-		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 		verify(testListModel, never()).runAllTests();
 
 		eventBus.post(new RunButtonClicked());
 
 		verify(testListModel).runAllTests();
+	}
+
+	@Test
+	public void onTestCompletionUpdateViewItem() throws Exception {
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
+		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(parsedTestModel.getUnitStatus(unit)).thenReturn(TestResult.SUCCESS);
+		verify(testItemFactory, never()).setUnitStatus(any(), any());
+
+		eventBus.post(new TestCompletedEvent(unit));
+
+		verify(testItemFactory).setUnitStatus(unit, TestResult.SUCCESS);
 	}
 
 }

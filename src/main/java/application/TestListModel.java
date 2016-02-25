@@ -1,7 +1,6 @@
 package application;
 
 import java.io.File;
-import java.util.List;
 
 import model.ParsedTestModel;
 import parser.IParserCallback;
@@ -12,6 +11,7 @@ import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
 import runner.TestRunnerFactory;
+import events.TestCompletedEvent;
 import events.TestListModelUpdatedEvent;
 
 public class TestListModel implements IParserCallback, ITesterCallback {
@@ -23,8 +23,8 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 
 	private ParsedTestModel parsedTestModel;
 
-	public TestListModel(IEventBus eventBus) {
-		this(new ParsedTestModel(), eventBus, new TestFileParser(), new ThreadRunner(), new TestRunnerFactory()
+	public TestListModel(IEventBus eventBus, ParsedTestModel parsedTestModel) {
+		this(parsedTestModel, eventBus, new TestFileParser(), new ThreadRunner(), new TestRunnerFactory()
 				.getTestRunner());
 	}
 
@@ -35,10 +35,6 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 		this.threadRunner = runner;
 		this.testRunner = testRunner;
 		this.parsedTestModel = parsedTestModel;
-	}
-
-	public List<ParsedTestUnit> getTests() {
-		return parsedTestModel.getTests();
 	}
 
 	public void loadFile(final File file) {
@@ -58,6 +54,7 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 	@Override
 	public void testCompleted(ParsedTestUnit parsedTestUnit, TestResult result) {
 		parsedTestModel.setUnitStatus(parsedTestUnit, result);
+		eventBus.post(new TestCompletedEvent(parsedTestUnit));
 	}
 
 }

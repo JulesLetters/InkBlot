@@ -3,6 +3,7 @@ package view;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import model.ParsedTestModel;
 import presenter.TestListPresenter;
 import application.GuavaEventBus;
 import application.TestListModel;
@@ -21,9 +22,10 @@ public class TestListWidget {
 
 		GuavaEventBus eventBus = new GuavaEventBus();
 		runAllButton.setOnAction(event -> eventBus.post(new RunButtonClicked()));
-		TestListModel testListModel = new TestListModel(eventBus);
+		ParsedTestModel parsedTestModel = new ParsedTestModel();
+		TestListModel testListModel = new TestListModel(eventBus, parsedTestModel);
 
-		new TestListPresenter(testListView, testListModel, eventBus);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus);
 	}
 
 	public Node getNode() {
