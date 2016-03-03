@@ -15,7 +15,7 @@ import com.google.common.eventbus.Subscribe;
 
 import events.RunButtonClicked;
 import events.TestCompletedEvent;
-import events.TestListModelUpdatedEvent;
+import events.FileLoadedEvent;
 
 public class TestListPresenter {
 
@@ -40,7 +40,7 @@ public class TestListPresenter {
 	}
 
 	@Subscribe
-	public void modelUpdated(TestListModelUpdatedEvent event) {
+	public void modelUpdated(FileLoadedEvent event) {
 		List<ParsedTestUnit> tests = parsedTestModel.getTests();
 		List<TestItem> testItems = tests.stream().map(testItemFactory::create).collect(Collectors.toList());
 		testListView.setInput(testItems);

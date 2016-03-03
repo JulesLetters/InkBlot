@@ -32,7 +32,7 @@ import application.IEventBus;
 import application.TestListModel;
 import events.RunButtonClicked;
 import events.TestCompletedEvent;
-import events.TestListModelUpdatedEvent;
+import events.FileLoadedEvent;
 
 public class TestListPresenterTest {
 
@@ -74,7 +74,7 @@ public class TestListPresenterTest {
 
 		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
-		eventBus.post(new TestListModelUpdatedEvent());
+		eventBus.post(new FileLoadedEvent());
 
 		verify(testListView).setInput(Arrays.asList(testItem1, testItem2));
 	}
@@ -85,7 +85,7 @@ public class TestListPresenterTest {
 
 		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
-		eventBus.post(new TestListModelUpdatedEvent());
+		eventBus.post(new FileLoadedEvent());
 
 		verify(testListView).setInput(Collections.emptyList());
 	}
@@ -95,7 +95,7 @@ public class TestListPresenterTest {
 		doAnswer(new Answer<Void>() {
 			@Override
 			public Void answer(InvocationOnMock invocation) throws Throwable {
-				eventBus.post(new TestListModelUpdatedEvent());
+				eventBus.post(new FileLoadedEvent());
 				return null;
 			}
 		}).when(testListModel).loadFile(any(File.class));

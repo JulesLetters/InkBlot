@@ -33,7 +33,7 @@ import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
 import events.TestCompletedEvent;
-import events.TestListModelUpdatedEvent;
+import events.FileLoadedEvent;
 
 public class TestListModelTest {
 
@@ -93,7 +93,7 @@ public class TestListModelTest {
 
 		parserCallbackCaptor.getValue().parseCompleted(mock(ParsedTestFile.class));
 
-		verify(eventBus).post(isA(TestListModelUpdatedEvent.class));
+		verify(eventBus).post(isA(FileLoadedEvent.class));
 	}
 
 	@Test
