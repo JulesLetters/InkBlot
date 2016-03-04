@@ -5,8 +5,8 @@ import javafx.beans.property.StringProperty;
 
 public class TestItem {
 
-	private StringProperty name;
-	private StringProperty status;
+	private StringProperty name = new SimpleStringProperty(this, "name");
+	private StringProperty status = new SimpleStringProperty(this, "status");
 
 	public TestItem(String name, String status) {
 		setName(name);
@@ -30,16 +30,10 @@ public class TestItem {
 	}
 
 	public StringProperty nameProperty() {
-		if (name == null) {
-			name = new SimpleStringProperty(this, "name");
-		}
 		return name;
 	}
 
 	public StringProperty statusProperty() {
-		if (status == null) {
-			status = new SimpleStringProperty(this, "status");
-		}
 		return status;
 	}
 
