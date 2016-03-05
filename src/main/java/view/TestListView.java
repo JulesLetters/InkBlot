@@ -14,14 +14,13 @@ public class TestListView {
 	private TreeTableView<TestItem> treeTableView = new TreeTableView<>();
 
 	public void setInput(final Collection<TestItem> testItems) {
-		TreeItem<TestItem> rootItem = new TreeItem<>(new TestItem("Tests", ""));
+		TreeItem<TestItem> rootItem = new TreeItem<>();
 		rootItem.setExpanded(true);
 
 		treeTableView.setRoot(rootItem);
+		treeTableView.setShowRoot(false);
 
-		for (TestItem testItem : testItems) {
-			rootItem.getChildren().add(new TreeItem<>(testItem));
-		}
+		makeNestedElements(testItems, rootItem);
 
 		TreeTableColumn<TestItem, String> statusColumn = new TreeTableColumn<>("Status");
 		statusColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("status"));
@@ -35,6 +34,15 @@ public class TestListView {
 
 	public TreeTableView<TestItem> getNode() {
 		return treeTableView;
+	}
+
+	private void makeNestedElements(Collection<TestItem> testItems, TreeItem<TestItem> rootItem) {
+		for (TestItem testItem : testItems) {
+			TreeItem<TestItem> treeItem = new TreeItem<>(testItem);
+			rootItem.getChildren().add(treeItem);
+
+			makeNestedElements(testItem.getChildren(), treeItem);
+		}
 	}
 
 }

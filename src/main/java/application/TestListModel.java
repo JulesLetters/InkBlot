@@ -11,8 +11,8 @@ import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
 import runner.TestRunnerFactory;
-import events.TestCompletedEvent;
 import events.FileLoadedEvent;
+import events.TestCompletedEvent;
 
 public class TestListModel implements IParserCallback, ITesterCallback {
 
@@ -44,7 +44,7 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 	@Override
 	public void parseCompleted(ParsedTestFile parsedTestFile) {
 		parsedTestModel.addFile(parsedTestFile);
-		eventBus.post(new FileLoadedEvent());
+		eventBus.post(new FileLoadedEvent(parsedTestFile));
 	}
 
 	public void runAllTests() {

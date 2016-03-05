@@ -3,7 +3,6 @@ package application;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -32,8 +31,8 @@ import parser.TestFileParser;
 import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
-import events.TestCompletedEvent;
 import events.FileLoadedEvent;
+import events.TestCompletedEvent;
 
 public class TestListModelTest {
 
@@ -91,9 +90,12 @@ public class TestListModelTest {
 
 		verifyZeroInteractions(eventBus);
 
-		parserCallbackCaptor.getValue().parseCompleted(mock(ParsedTestFile.class));
+		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
+		parserCallbackCaptor.getValue().parseCompleted(parsedTestFile);
 
-		verify(eventBus).post(isA(FileLoadedEvent.class));
+		ArgumentCaptor<FileLoadedEvent> eventCaptor = ArgumentCaptor.forClass(FileLoadedEvent.class);
+		verify(eventBus).post(eventCaptor.capture());
+		assertEquals(parsedTestFile, eventCaptor.getValue().getParsedTestFile());
 	}
 
 	@Test

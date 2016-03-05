@@ -1,10 +1,10 @@
 package presenter;
 
 import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 import model.ParsedTestModel;
+import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
 import view.TestItem;
 import view.TestListView;
@@ -13,9 +13,9 @@ import application.TestListModel;
 
 import com.google.common.eventbus.Subscribe;
 
+import events.FileLoadedEvent;
 import events.RunButtonClicked;
 import events.TestCompletedEvent;
-import events.FileLoadedEvent;
 
 public class TestListPresenter {
 
@@ -40,10 +40,10 @@ public class TestListPresenter {
 	}
 
 	@Subscribe
-	public void modelUpdated(FileLoadedEvent event) {
-		List<ParsedTestUnit> tests = parsedTestModel.getTests();
-		List<TestItem> testItems = tests.stream().map(testItemFactory::create).collect(Collectors.toList());
-		testListView.setInput(testItems);
+	public void fileLoaded(FileLoadedEvent event) {
+		ParsedTestFile parsedTestFile = event.getParsedTestFile();
+		TestItem testItem = testItemFactory.create(parsedTestFile);
+		testListView.setInput(Collections.singletonList(testItem));
 	}
 
 	@Subscribe
