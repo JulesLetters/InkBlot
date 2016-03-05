@@ -16,7 +16,8 @@ public class TestItemFactory {
 
 	public TestItem create(ParsedTestFile parsedTestFile) {
 		List<TestItem> children = parsedTestFile.getTests().stream().map(this::create).collect(Collectors.toList());
-		TestItem testItem = new TestItem("File", "Loaded", children);
+		String fileName = parsedTestFile.getFile().getName();
+		TestItem testItem = new TestItem(fileName, "Loaded", children);
 		return testItem;
 	}
 

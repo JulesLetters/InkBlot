@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +29,10 @@ public class TestItemFactoryTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
+		File actualFile = mock(File.class);
+		when(file.getFile()).thenReturn(actualFile);
+		when(actualFile.getName()).thenReturn("Tests.yaml");
+
 		testObject = new TestItemFactory();
 	}
 
@@ -39,6 +44,7 @@ public class TestItemFactoryTest {
 
 		TestItem testItem = testObject.create(file);
 
+		assertEquals("Tests.yaml", testItem.getName());
 		List<TestItem> children = testItem.getChildren();
 		assertEquals(1, children.size());
 		assertEquals("This is a test name", children.get(0).getName());
