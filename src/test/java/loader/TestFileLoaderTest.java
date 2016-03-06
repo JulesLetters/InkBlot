@@ -1,26 +1,18 @@
 package loader;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class TestFileLoaderTest {
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-
 	@Test
-	public void testLoadUsingYamlIntegrationTest() throws Exception {
+	public void loadYamlIntegrationTest() throws Exception {
 		List<String> expectedTestList = Arrays.asList("CompleteExampleTest", "CommaTest", "MultiLineTest");
 		List<String> expectedCommands1 = Arrays.asList("Command lines enclosed in quotes.",
 				"Delimit lines with commas.", "Use \\n \n for newlines.",
@@ -58,18 +50,6 @@ public class TestFileLoaderTest {
 		assertEquals(2, actualCommands3.size());
 		assertEquals(expectedCommands3.get(0), actualCommands3.get(0).getCommandText());
 		assertEquals(expectedCommands3.get(1), actualCommands3.get(1).getCommandText());
-	}
-
-	@Test
-	public void testLoadTestfileThrowsFileNotFound() throws Exception {
-		File file = mock(File.class);
-		FileReaderFactory fileReaderFactory = mock(FileReaderFactory.class);
-		YamlWrapper yaml = mock(YamlWrapper.class);
-		TestFileLoader testFileLoader = new TestFileLoader(yaml, fileReaderFactory);
-		when(fileReaderFactory.create(file)).thenThrow(new FileNotFoundException());
-
-		exception.expect(FileNotFoundException.class);
-		testFileLoader.loadTestfile(file);
 	}
 
 }

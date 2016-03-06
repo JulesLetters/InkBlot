@@ -7,19 +7,13 @@ import java.io.FileReader;
 public class TestFileLoader {
 
 	private YamlWrapper yaml;
-	private FileReaderFactory fileReaderFactory;
 
 	public TestFileLoader() {
-		this(new YamlFactory().create(), new FileReaderFactory());
+		this.yaml = new YamlFactory().create();
 	}
 
-	protected TestFileLoader(YamlWrapper yaml, FileReaderFactory fileReaderFactory) {
-		this.yaml = yaml;
-		this.fileReaderFactory = fileReaderFactory;
+	public synchronized TestFile loadTestfile(File file) throws FileNotFoundException {
+		return (TestFile) yaml.load(new FileReader(file));
 	}
 
-	public TestFile loadTestfile(File file) throws FileNotFoundException {
-		FileReader fileReader = fileReaderFactory.create(file);
-		return (TestFile) yaml.load(fileReader);
-	}
 }
