@@ -37,13 +37,14 @@ public class TestListPresenter {
 		this.testItemFactory = testItemFactory;
 		eventBus.register(this);
 		testListModel.loadFile(new File("Tests.txt"));
+		testListModel.loadFile(new File("Tests2.txt"));
 	}
 
 	@Subscribe
 	public void fileLoaded(FileLoadedEvent event) {
 		ParsedTestFile parsedTestFile = event.getParsedTestFile();
 		TestItem testItem = testItemFactory.create(parsedTestFile);
-		testListView.setInput(Collections.singletonList(testItem));
+		testListView.addAllItems(Collections.singletonList(testItem));
 	}
 
 	@Subscribe

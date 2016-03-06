@@ -1,0 +1,6 @@
+tests: 
+  - name: More
+    commands: [
+      "output think Another file, another test.",
+      "expect Another file, another test.",
+    ]

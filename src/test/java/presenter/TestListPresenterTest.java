@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,8 +55,9 @@ public class TestListPresenterTest {
 
 		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
-		verify(testListModel).loadFile(fileCaptor.capture());
-		assertEquals("Tests.txt", fileCaptor.getValue().getName());
+		verify(testListModel, times(2)).loadFile(fileCaptor.capture());
+		assertEquals("Tests.txt", fileCaptor.getAllValues().get(0).getName());
+		assertEquals("Tests2.txt", fileCaptor.getAllValues().get(1).getName());
 	}
 
 	@Test
@@ -68,7 +70,7 @@ public class TestListPresenterTest {
 
 		eventBus.post(new FileLoadedEvent(file));
 
-		verify(testListView).setInput(Collections.singletonList(testItem));
+		verify(testListView).addAllItems(Collections.singletonList(testItem));
 	}
 
 	@Test

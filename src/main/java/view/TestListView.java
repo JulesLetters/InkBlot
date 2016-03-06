@@ -11,16 +11,14 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 
 public class TestListView {
 
-	private TreeTableView<TestItem> treeTableView = new TreeTableView<>();
+	private TreeTableView<TestItem> treeTableView;
 
-	public void setInput(final Collection<TestItem> testItems) {
+	public TestListView() {
+		treeTableView = new TreeTableView<>();
 		TreeItem<TestItem> rootItem = new TreeItem<>();
 		rootItem.setExpanded(true);
-
 		treeTableView.setRoot(rootItem);
 		treeTableView.setShowRoot(false);
-
-		makeNestedElements(testItems, rootItem);
 
 		TreeTableColumn<TestItem, String> statusColumn = new TreeTableColumn<>("Status");
 		statusColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("status"));
@@ -32,16 +30,20 @@ public class TestListView {
 		treeTableView.getColumns().setAll(columns);
 	}
 
+	public void addAllItems(Collection<TestItem> testItems) {
+		makeNestedItems(testItems, treeTableView.getRoot());
+	}
+
 	public TreeTableView<TestItem> getNode() {
 		return treeTableView;
 	}
 
-	private void makeNestedElements(Collection<TestItem> testItems, TreeItem<TestItem> rootItem) {
-		for (TestItem testItem : testItems) {
-			TreeItem<TestItem> treeItem = new TreeItem<>(testItem);
+	private void makeNestedItems(Collection<TestItem> testItems, TreeItem<TestItem> rootItem) {
+		for (TestItem item : testItems) {
+			TreeItem<TestItem> treeItem = new TreeItem<>(item);
+			treeItem.setExpanded(true);
+			makeNestedItems(item.getChildren(), treeItem);
 			rootItem.getChildren().add(treeItem);
-
-			makeNestedElements(testItem.getChildren(), treeItem);
 		}
 	}
 
