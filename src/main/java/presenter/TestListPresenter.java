@@ -1,6 +1,5 @@
 package presenter;
 
-import java.io.File;
 import java.util.Collections;
 
 import model.ParsedTestModel;
@@ -36,8 +35,6 @@ public class TestListPresenter {
 		this.parsedTestModel = parsedTestModel;
 		this.testItemFactory = testItemFactory;
 		eventBus.register(this);
-		testListModel.loadFile(new File("Tests.txt"));
-		testListModel.loadFile(new File("Tests2.txt"));
 	}
 
 	@Subscribe

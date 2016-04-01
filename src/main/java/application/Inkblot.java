@@ -1,10 +1,13 @@
 package application;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import model.ParsedTestModel;
 import telnet.LineBuffer;
 import telnet.TelnetLineReader;
 import telnet.TelnetLineReaderSingleton;
@@ -29,7 +32,11 @@ public class Inkblot extends Application {
 		gridPane.add(mainHistory.getNode(), 0, 0);
 		mainHistory.setBuffer(lineBuffer);
 
-		TestListWidget testListWidget = new TestListWidget();
+		GuavaEventBus eventBus = new GuavaEventBus();
+		ParsedTestModel parsedTestModel = new ParsedTestModel();
+		TestListModel testListModel = new TestListModel(eventBus, parsedTestModel);
+
+		TestListWidget testListWidget = new TestListWidget(testListModel, parsedTestModel);
 		gridPane.add(testListWidget.getNode(), 1, 0, 2, 1);
 
 		InputTextWidget inputTextWidget = new InputTextWidget();
@@ -39,6 +46,9 @@ public class Inkblot extends Application {
 		primaryStage.setTitle("Inkblot");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+
+		testListModel.loadFile(new File("Tests.txt"));
+		testListModel.loadFile(new File("Tests2.txt"));
 	}
 
 	public static void main(String[] args) {

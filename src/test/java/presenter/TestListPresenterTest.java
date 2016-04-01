@@ -1,21 +1,17 @@
 package presenter;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.util.Collections;
 
 import model.ParsedTestModel;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -47,17 +43,6 @@ public class TestListPresenterTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-	}
-
-	@Test
-	public void onConstructionModelLoadsFile() {
-		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
-
-		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
-
-		verify(testListModel, times(2)).loadFile(fileCaptor.capture());
-		assertEquals("Tests.txt", fileCaptor.getAllValues().get(0).getName());
-		assertEquals("Tests2.txt", fileCaptor.getAllValues().get(1).getName());
 	}
 
 	@Test

@@ -57,4 +57,8 @@ public class TestListModel implements IParserCallback, ITesterCallback {
 		eventBus.post(new TestCompletedEvent(parsedTestUnit));
 	}
 
+	public IEventBus getEventBus() {
+		return eventBus;
+	}
+
 }
