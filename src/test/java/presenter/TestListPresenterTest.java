@@ -2,31 +2,34 @@ package presenter;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
+
+import model.ParsedTestModel;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
+import parser.ParsedTestFile;
+import parser.ParsedTestUnit;
+import runner.TestResult;
 import view.TestItem;
 import view.TestListView;
 import application.GuavaEventBus;
 import application.IEventBus;
 import application.TestListModel;
+import events.FileLoadedEvent;
 import events.RunButtonClicked;
-import events.TestListModelUpdatedEvent;
+import events.TestCompletedEvent;
 
 public class TestListPresenterTest {
 
@@ -34,6 +37,10 @@ public class TestListPresenterTest {
 	private TestListView testListView;
 	@Mock
 	private TestListModel testListModel;
+	@Mock
+	private ParsedTestModel parsedTestModel;
+	@Mock
+	private TestItemFactory testItemFactory;
 
 	private IEventBus eventBus = new GuavaEventBus();
 
@@ -46,49 +53,46 @@ public class TestListPresenterTest {
 	public void onConstructionModelLoadsFile() {
 		ArgumentCaptor<File> fileCaptor = ArgumentCaptor.forClass(File.class);
 
-		new TestListPresenter(testListView, testListModel, eventBus);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
-		verify(testListModel).loadFile(fileCaptor.capture());
-		assertEquals("Tests.txt", fileCaptor.getValue().getName());
+		verify(testListModel, times(2)).loadFile(fileCaptor.capture());
+		assertEquals("Tests.txt", fileCaptor.getAllValues().get(0).getName());
+		assertEquals("Tests2.txt", fileCaptor.getAllValues().get(1).getName());
 	}
 
 	@Test
-	public void testEventFromModelUpdatesView() throws Exception {
-		List<TestItem> expectedItems = Collections.singletonList(mock(TestItem.class));
-		when(testListModel.getTests()).thenReturn(expectedItems);
-		new TestListPresenter(testListView, testListModel, eventBus);
+	public void updateViewWhenFileLoads() throws Exception {
+		ParsedTestFile file = mock(ParsedTestFile.class);
+		TestItem testItem = mock(TestItem.class);
+		when(testItemFactory.create(file)).thenReturn(testItem);
 
-		eventBus.post(new TestListModelUpdatedEvent());
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 
-		verify(testListView).setInput(expectedItems);
-	}
+		eventBus.post(new FileLoadedEvent(file));
 
-	@Test
-	public void testListenForFileLoadedBeforeLoadingFile() throws Exception {
-		doAnswer(new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				eventBus.post(new TestListModelUpdatedEvent());
-				return null;
-			}
-		}).when(testListModel).loadFile(any(File.class));
-
-		List<TestItem> expectedItems = Collections.singletonList(mock(TestItem.class));
-		when(testListModel.getTests()).thenReturn(expectedItems);
-
-		new TestListPresenter(testListView, testListModel, eventBus);
-
-		verify(testListView).setInput(expectedItems);
+		verify(testListView).addAllItems(Collections.singletonList(testItem));
 	}
 
 	@Test
 	public void testWhenRunButtonClickedMakeModelRunTests() throws Exception {
-		new TestListPresenter(testListView, testListModel, eventBus);
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
 		verify(testListModel, never()).runAllTests();
 
 		eventBus.post(new RunButtonClicked());
 
 		verify(testListModel).runAllTests();
+	}
+
+	@Test
+	public void onTestCompletionUpdateViewItem() throws Exception {
+		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
+		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(parsedTestModel.getUnitStatus(unit)).thenReturn(TestResult.SUCCESS);
+		verify(testItemFactory, never()).setUnitStatus(any(), any());
+
+		eventBus.post(new TestCompletedEvent(unit));
+
+		verify(testItemFactory).setUnitStatus(unit, TestResult.SUCCESS);
 	}
 
 }

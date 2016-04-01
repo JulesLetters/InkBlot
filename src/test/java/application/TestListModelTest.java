@@ -3,7 +3,6 @@ package application;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,7 +19,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import parser.IParserCallback;
@@ -30,8 +31,8 @@ import parser.TestFileParser;
 import runner.ITesterCallback;
 import runner.TestResult;
 import runner.TestRunner;
-import view.TestItem;
-import events.TestListModelUpdatedEvent;
+import events.FileLoadedEvent;
+import events.TestCompletedEvent;
 
 public class TestListModelTest {
 
@@ -63,16 +64,6 @@ public class TestListModelTest {
 	}
 
 	@Test
-	public void getTestsReturnsTestResultsFromModel() {
-		List<TestItem> expectedResults = Collections.singletonList(mock(TestItem.class));
-		when(parsedTestModel.getTestResults()).thenReturn(expectedResults);
-
-		List<TestItem> actualResults = model.getTests();
-
-		assertEquals(expectedResults, actualResults);
-	}
-
-	@Test
 	public void whenParserCompletesTestNamesAreAddedToList() {
 		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
 
@@ -99,9 +90,12 @@ public class TestListModelTest {
 
 		verifyZeroInteractions(eventBus);
 
-		parserCallbackCaptor.getValue().parseCompleted(mock(ParsedTestFile.class));
+		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
+		parserCallbackCaptor.getValue().parseCompleted(parsedTestFile);
 
-		verify(eventBus).post(isA(TestListModelUpdatedEvent.class));
+		ArgumentCaptor<FileLoadedEvent> eventCaptor = ArgumentCaptor.forClass(FileLoadedEvent.class);
+		verify(eventBus).post(eventCaptor.capture());
+		assertEquals(parsedTestFile, eventCaptor.getValue().getParsedTestFile());
 	}
 
 	@Test
@@ -122,7 +116,12 @@ public class TestListModelTest {
 		verify(parsedTestModel, never()).setUnitStatus(any(), any());
 		testerCallbackCaptor.getValue().testCompleted(parsedTestUnit, testResult);
 
-		verify(parsedTestModel).setUnitStatus(parsedTestUnit, testResult);
+		InOrder inOrder = Mockito.inOrder(parsedTestModel, eventBus);
+		inOrder.verify(parsedTestModel).setUnitStatus(parsedTestUnit, testResult);
+
+		ArgumentCaptor<TestCompletedEvent> eventCaptor = ArgumentCaptor.forClass(TestCompletedEvent.class);
+		inOrder.verify(eventBus).post(eventCaptor.capture());
+		assertEquals(parsedTestUnit, eventCaptor.getValue().getTestUnit());
 	}
 
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -14,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
 import runner.TestResult;
-import view.TestItem;
 
 public class ParsedTestModelTest {
 
@@ -34,7 +34,7 @@ public class ParsedTestModelTest {
 	}
 
 	@Test
-	public void addFileAddsAllUnitTestsFromFile() throws Exception {
+	public void addFileAddsAllUnitTestsFromFileInOrder() throws Exception {
 		List<ParsedTestUnit> testList = Arrays.asList(parsedTestUnit1, parsedTestUnit2);
 		when(parsedTestFile.getTests()).thenReturn(testList);
 		when(parsedTestUnit1.getName()).thenReturn("Larry");
@@ -43,33 +43,62 @@ public class ParsedTestModelTest {
 		parsedTestModel.addFile(parsedTestFile);
 
 		List<ParsedTestUnit> tests = parsedTestModel.getTests();
-		List<TestItem> testResults = parsedTestModel.getTestResults();
 
 		assertEquals(2, tests.size());
 		assertEquals(parsedTestUnit1, tests.get(0));
 		assertEquals(parsedTestUnit2, tests.get(1));
-
-		assertEquals(2, testResults.size());
-		assertEquals("Larry", testResults.get(0).getName());
-		assertEquals("Jacob", testResults.get(1).getName());
 	}
 
 	@Test
-	public void setUnitStatusUpdatesOriginalTestItem() throws Exception {
-		List<ParsedTestUnit> testList = Arrays.asList(parsedTestUnit1);
+	public void getTestsReturnsCopy() throws Exception {
+		List<ParsedTestUnit> testList = Collections.singletonList(parsedTestUnit1);
 		when(parsedTestFile.getTests()).thenReturn(testList);
 		when(parsedTestUnit1.getName()).thenReturn("Larry");
 
 		parsedTestModel.addFile(parsedTestFile);
 
-		List<TestItem> testResults = parsedTestModel.getTestResults();
+		List<ParsedTestUnit> tests1 = parsedTestModel.getTests();
+		List<ParsedTestUnit> tests2 = parsedTestModel.getTests();
 
-		assertEquals(1, testResults.size());
-		assertEquals(TestResult.LOADED, testResults.get(0).getStatus());
+		assertEquals(1, tests1.size());
+		assertEquals(1, tests2.size());
+		tests1.clear();
+		assertEquals(1, tests2.size());
+	}
 
+	@Test
+	public void unitStatusDefaultsToLoaded() throws Exception {
+		List<ParsedTestUnit> testList = Collections.singletonList(parsedTestUnit1);
+		when(parsedTestFile.getTests()).thenReturn(testList);
+
+		parsedTestModel.addFile(parsedTestFile);
+		String status = parsedTestModel.getUnitStatus(parsedTestUnit1);
+
+		assertEquals(TestResult.LOADED, status);
+	}
+
+	@Test
+	public void setUnitStatusChangesStatus() throws Exception {
+		List<ParsedTestUnit> testList = Collections.singletonList(parsedTestUnit1);
+		when(parsedTestFile.getTests()).thenReturn(testList);
+
+		parsedTestModel.addFile(parsedTestFile);
 		parsedTestModel.setUnitStatus(parsedTestUnit1, new TestResult(TestResult.SUCCESS));
 
-		assertEquals(TestResult.SUCCESS, testResults.get(0).getStatus());
+		String status = parsedTestModel.getUnitStatus(parsedTestUnit1);
+		assertEquals(TestResult.SUCCESS, status);
+	}
+
+	@Test
+	public void unitStatusesAreSeparate() throws Exception {
+		List<ParsedTestUnit> testList = Arrays.asList(parsedTestUnit1, parsedTestUnit2);
+		when(parsedTestFile.getTests()).thenReturn(testList);
+
+		parsedTestModel.addFile(parsedTestFile);
+		parsedTestModel.setUnitStatus(parsedTestUnit1, new TestResult(TestResult.FAILURE));
+
+		assertEquals(TestResult.FAILURE, parsedTestModel.getUnitStatus(parsedTestUnit1));
+		assertEquals(TestResult.LOADED, parsedTestModel.getUnitStatus(parsedTestUnit2));
 	}
 
 }

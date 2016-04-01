@@ -8,29 +8,25 @@ import java.util.Map;
 import parser.ParsedTestFile;
 import parser.ParsedTestUnit;
 import runner.TestResult;
-import view.TestItem;
 
 public class ParsedTestModel {
 
-	private Map<ParsedTestUnit, TestItem> map = new LinkedHashMap<>();
+	private Map<ParsedTestUnit, String> unitStatuses = new LinkedHashMap<>();
 
 	public void addFile(ParsedTestFile parsedTestFile) {
-		for (ParsedTestUnit parsedTestUnit : parsedTestFile.getTests()) {
-			String name = parsedTestUnit.getName();
-			map.put(parsedTestUnit, new TestItem(name, TestResult.LOADED));
-		}
+		parsedTestFile.getTests().forEach(unit -> unitStatuses.put(unit, TestResult.LOADED));
 	}
 
 	public List<ParsedTestUnit> getTests() {
-		return new ArrayList<>(map.keySet());
-	}
-
-	public List<TestItem> getTestResults() {
-		return new ArrayList<>(map.values());
+		return new ArrayList<>(unitStatuses.keySet());
 	}
 
 	public void setUnitStatus(ParsedTestUnit parsedTestUnit, TestResult testResult) {
-		map.get(parsedTestUnit).setStatus(testResult.getStatus());
+		unitStatuses.put(parsedTestUnit, testResult.getStatus());
+	}
+
+	public String getUnitStatus(ParsedTestUnit parsedTestUnit) {
+		return unitStatuses.get(parsedTestUnit);
 	}
 
 }
