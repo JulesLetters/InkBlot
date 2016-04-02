@@ -1,27 +1,20 @@
 package application;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import model.ParsedTestModel;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import parser.IParserCallback;
@@ -36,8 +29,6 @@ import events.TestCompletedEvent;
 
 public class TestListModelTest {
 
-	@Mock
-	private ParsedTestModel parsedTestModel;
 	@Mock
 	private ThreadRunner threadRunner;
 	@Mock
@@ -60,24 +51,7 @@ public class TestListModelTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		model = new TestListModel(parsedTestModel, eventBus, parser, threadRunner, testRunner);
-	}
-
-	@Test
-	public void whenParserCompletesTestNamesAreAddedToList() {
-		ParsedTestFile parsedTestFile = mock(ParsedTestFile.class);
-
-		model.loadFile(file);
-
-		verify(parser, never()).parse(any(File.class), any(IParserCallback.class));
-		verify(threadRunner).run(runnableCaptor.capture(), eq("File Parser"));
-		runnableCaptor.getValue().run();
-
-		verify(parsedTestModel, never()).addFile(any(ParsedTestFile.class));
-		verify(parser).parse(eq(file), parserCallbackCaptor.capture());
-		parserCallbackCaptor.getValue().parseCompleted(parsedTestFile);
-
-		verify(parsedTestModel).addFile(parsedTestFile);
+		model = new TestListModel(eventBus, parser, threadRunner, testRunner);
 	}
 
 	@Test
@@ -103,9 +77,8 @@ public class TestListModelTest {
 		ParsedTestUnit parsedTestUnit = mock(ParsedTestUnit.class);
 		TestResult testResult = mock(TestResult.class);
 		List<ParsedTestUnit> expectedTests = Collections.singletonList(parsedTestUnit);
-		when(parsedTestModel.getTests()).thenReturn(expectedTests);
 
-		model.runAllTests();
+		model.runAllTests(expectedTests);
 
 		verifyZeroInteractions(testRunner);
 		verify(threadRunner).run(runnableCaptor.capture(), eq("Test Runner"));
@@ -113,15 +86,13 @@ public class TestListModelTest {
 		runnableCaptor.getValue().run();
 
 		verify(testRunner).runTests(eq(expectedTests), testerCallbackCaptor.capture());
-		verify(parsedTestModel, never()).setUnitStatus(any(), any());
 		testerCallbackCaptor.getValue().testCompleted(parsedTestUnit, testResult);
 
-		InOrder inOrder = Mockito.inOrder(parsedTestModel, eventBus);
-		inOrder.verify(parsedTestModel).setUnitStatus(parsedTestUnit, testResult);
-
 		ArgumentCaptor<TestCompletedEvent> eventCaptor = ArgumentCaptor.forClass(TestCompletedEvent.class);
-		inOrder.verify(eventBus).post(eventCaptor.capture());
-		assertEquals(parsedTestUnit, eventCaptor.getValue().getTestUnit());
+		verify(eventBus).post(eventCaptor.capture());
+		TestCompletedEvent testCompletedEvent = eventCaptor.getValue();
+		assertEquals(parsedTestUnit, testCompletedEvent.getTestUnit());
+		assertEquals(testResult, testCompletedEvent.getResult());
 	}
 
 }

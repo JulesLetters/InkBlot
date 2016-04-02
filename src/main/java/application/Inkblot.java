@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import model.ParsedTestModel;
 import telnet.LineBuffer;
 import telnet.TelnetLineReader;
 import telnet.TelnetLineReaderSingleton;
@@ -33,10 +32,9 @@ public class Inkblot extends Application {
 		mainHistory.setBuffer(lineBuffer);
 
 		GuavaEventBus eventBus = new GuavaEventBus();
-		ParsedTestModel parsedTestModel = new ParsedTestModel();
-		TestListModel testListModel = new TestListModel(eventBus, parsedTestModel);
+		TestListModel testListModel = new TestListModel(eventBus);
 
-		TestListWidget testListWidget = new TestListWidget(testListModel, parsedTestModel);
+		TestListWidget testListWidget = new TestListWidget(testListModel);
 		gridPane.add(testListWidget.getNode(), 1, 0, 2, 1);
 
 		InputTextWidget inputTextWidget = new InputTextWidget();

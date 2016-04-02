@@ -1,6 +1,7 @@
 package presenter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -97,6 +98,55 @@ public class TestItemFactoryTest {
 		assertEquals(2, children.size());
 		assertEquals(TestResult.EXCEPTION, children.get(0).getStatus());
 		assertEquals(TestResult.SUCCESS, children.get(1).getStatus());
+	}
+
+	@Test
+	public void getTestsReturnsAllIngestedUnits() throws Exception {
+		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
+		ParsedTestUnit unit2 = mock(ParsedTestUnit.class);
+		when(file.getTests()).thenReturn(Arrays.asList(unit1, unit2));
+
+		testObject.create(file);
+		List<ParsedTestUnit> actualTests = testObject.getTests();
+
+		List<ParsedTestUnit> expectedTests = Arrays.asList(unit1, unit2);
+		assertEquals(expectedTests, actualTests);
+	}
+
+	@Test
+	public void getTestsReturnsAllIngestedUnitsFromMultipleFiles() throws Exception {
+		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
+		ParsedTestUnit unit2 = mock(ParsedTestUnit.class);
+		ParsedTestFile file1 = mock(ParsedTestFile.class);
+		ParsedTestFile file2 = mock(ParsedTestFile.class);
+		when(file1.getTests()).thenReturn(Arrays.asList(unit1));
+		when(file2.getTests()).thenReturn(Arrays.asList(unit2));
+		when(file1.getFile()).thenReturn(mock(File.class));
+		when(file2.getFile()).thenReturn(mock(File.class));
+
+		testObject.create(file1);
+		testObject.create(file2);
+		List<ParsedTestUnit> actualTests = testObject.getTests();
+
+		List<ParsedTestUnit> expectedTests = Arrays.asList(unit1, unit2);
+		assertEquals(expectedTests, actualTests);
+	}
+
+	@Test
+	public void getTestsReturnsCopiesOfList() throws Exception {
+		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
+		when(file.getTests()).thenReturn(Arrays.asList(unit1));
+
+		testObject.create(file);
+		List<ParsedTestUnit> copy1 = testObject.getTests();
+		List<ParsedTestUnit> copy2 = testObject.getTests();
+
+		List<ParsedTestUnit> expectedTests = Collections.singletonList(unit1);
+		assertEquals(expectedTests, copy1);
+		assertEquals(expectedTests, copy2);
+		copy1.clear();
+		assertTrue(copy1.isEmpty());
+		assertEquals(expectedTests, copy2);
 	}
 
 }

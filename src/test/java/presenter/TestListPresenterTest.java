@@ -7,8 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-
-import model.ParsedTestModel;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +33,6 @@ public class TestListPresenterTest {
 	@Mock
 	private TestListModel testListModel;
 	@Mock
-	private ParsedTestModel parsedTestModel;
-	@Mock
 	private TestItemFactory testItemFactory;
 
 	private IEventBus eventBus = new GuavaEventBus();
@@ -51,7 +48,7 @@ public class TestListPresenterTest {
 		TestItem testItem = mock(TestItem.class);
 		when(testItemFactory.create(file)).thenReturn(testItem);
 
-		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
 
 		eventBus.post(new FileLoadedEvent(file));
 
@@ -60,22 +57,23 @@ public class TestListPresenterTest {
 
 	@Test
 	public void testWhenRunButtonClickedMakeModelRunTests() throws Exception {
-		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
-		verify(testListModel, never()).runAllTests();
+		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
+		verify(testListModel, never()).runAllTests(any());
+		List<ParsedTestUnit> expectedTestList = Collections.singletonList(mock(ParsedTestUnit.class));
+		when(testItemFactory.getTests()).thenReturn(expectedTestList);
 
 		eventBus.post(new RunButtonClicked());
 
-		verify(testListModel).runAllTests();
+		verify(testListModel).runAllTests(expectedTestList);
 	}
 
 	@Test
 	public void onTestCompletionUpdateViewItem() throws Exception {
-		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus, testItemFactory);
+		new TestListPresenter(testListView, testListModel, eventBus, testItemFactory);
 		ParsedTestUnit unit = mock(ParsedTestUnit.class);
-		when(parsedTestModel.getUnitStatus(unit)).thenReturn(TestResult.SUCCESS);
 		verify(testItemFactory, never()).setUnitStatus(any(), any());
 
-		eventBus.post(new TestCompletedEvent(unit));
+		eventBus.post(new TestCompletedEvent(unit, new TestResult(TestResult.SUCCESS)));
 
 		verify(testItemFactory).setUnitStatus(unit, TestResult.SUCCESS);
 	}

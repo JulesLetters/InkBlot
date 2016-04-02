@@ -3,7 +3,6 @@ package view;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import model.ParsedTestModel;
 import presenter.TestListPresenter;
 import application.IEventBus;
 import application.TestListModel;
@@ -13,7 +12,7 @@ public class TestListWidget {
 
 	final GridPane gridPane = new GridPane();
 
-	public TestListWidget(TestListModel testListModel, ParsedTestModel parsedTestModel) {
+	public TestListWidget(TestListModel testListModel) {
 		TestListView testListView = new TestListView();
 		gridPane.add(testListView.getNode(), 0, 0);
 
@@ -23,7 +22,7 @@ public class TestListWidget {
 		IEventBus eventBus = testListModel.getEventBus();
 		runAllButton.setOnAction(event -> eventBus.post(new RunButtonClicked()));
 
-		new TestListPresenter(testListView, testListModel, parsedTestModel, eventBus);
+		new TestListPresenter(testListView, testListModel, eventBus);
 
 	}
 
