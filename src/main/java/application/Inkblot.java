@@ -1,6 +1,6 @@
 package application;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -45,8 +45,7 @@ public class Inkblot extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
-		testListModel.loadFile(new File("Tests.txt"));
-		testListModel.loadFile(new File("Tests2.txt"));
+		new FileLoader(testListModel).loadFiles(Paths.get("."));
 	}
 
 	public static void main(String[] args) {
