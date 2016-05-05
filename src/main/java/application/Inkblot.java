@@ -1,5 +1,7 @@
 package application;
 
+import java.nio.file.Paths;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
@@ -29,7 +31,10 @@ public class Inkblot extends Application {
 		gridPane.add(mainHistory.getNode(), 0, 0);
 		mainHistory.setBuffer(lineBuffer);
 
-		TestListWidget testListWidget = new TestListWidget();
+		GuavaEventBus eventBus = new GuavaEventBus();
+		TestListModel testListModel = new TestListModel(eventBus);
+
+		TestListWidget testListWidget = new TestListWidget(testListModel);
 		gridPane.add(testListWidget.getNode(), 1, 0, 2, 1);
 
 		InputTextWidget inputTextWidget = new InputTextWidget();
@@ -39,6 +44,8 @@ public class Inkblot extends Application {
 		primaryStage.setTitle("Inkblot");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+
+		new FileLoader(testListModel).loadFiles(Paths.get("."));
 	}
 
 	public static void main(String[] args) {
