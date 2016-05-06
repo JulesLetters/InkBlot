@@ -18,6 +18,10 @@ public class SingleTestRunner {
 	}
 
 	public TestResult runTest(LineBuffer lineBuffer, TelnetLineWriter lineWriter, ParsedTestUnit parsedTestUnit) {
+		if (parsedTestUnit.getError().isPresent()) {
+			return new TestResult(TestResult.INVALID);
+		}
+
 		for (IParsedTestCommand command : parsedTestUnit.getCommands()) {
 			CommandResult commandResult = commandRunner.runCommand(command, lineBuffer, lineWriter);
 			if (CommandResult.EXCEPTION.equals(commandResult.getStatus())) {

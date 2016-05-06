@@ -42,6 +42,7 @@ public class TestItemFactoryTest {
 	@Test
 	public void createWithOneUnit() throws Exception {
 		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(unit.getError()).thenReturn(Optional.empty());
 		when(file.getTests()).thenReturn(Collections.singletonList(unit));
 		when(unit.getName()).thenReturn("This is a test name");
 
@@ -61,6 +62,8 @@ public class TestItemFactoryTest {
 		when(file.getTests()).thenReturn(Arrays.asList(unit1, unit2));
 		when(unit1.getName()).thenReturn("First test");
 		when(unit2.getName()).thenReturn("Second test");
+		when(unit1.getError()).thenReturn(Optional.empty());
+		when(unit2.getError()).thenReturn(Optional.empty());
 
 		TestItem testItem = testObject.create(file);
 
@@ -75,6 +78,7 @@ public class TestItemFactoryTest {
 	@Test
 	public void setUnitStatusAltersRetainedTestItem() throws Exception {
 		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(unit.getError()).thenReturn(Optional.empty());
 		when(file.getTests()).thenReturn(Collections.singletonList(unit));
 		TestItem testItem = testObject.create(file);
 
@@ -90,6 +94,8 @@ public class TestItemFactoryTest {
 		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
 		ParsedTestUnit unit2 = mock(ParsedTestUnit.class);
 		when(file.getTests()).thenReturn(Arrays.asList(unit1, unit2));
+		when(unit1.getError()).thenReturn(Optional.empty());
+		when(unit2.getError()).thenReturn(Optional.empty());
 
 		TestItem testItem = testObject.create(file);
 
@@ -107,6 +113,8 @@ public class TestItemFactoryTest {
 		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
 		ParsedTestUnit unit2 = mock(ParsedTestUnit.class);
 		when(file.getTests()).thenReturn(Arrays.asList(unit1, unit2));
+		when(unit1.getError()).thenReturn(Optional.empty());
+		when(unit2.getError()).thenReturn(Optional.empty());
 
 		testObject.create(file);
 		List<ParsedTestUnit> actualTests = testObject.getTests();
@@ -127,6 +135,8 @@ public class TestItemFactoryTest {
 		when(file2.getFile()).thenReturn(mock(File.class));
 		when(file1.getError()).thenReturn(Optional.empty());
 		when(file2.getError()).thenReturn(Optional.empty());
+		when(unit1.getError()).thenReturn(Optional.empty());
+		when(unit2.getError()).thenReturn(Optional.empty());
 
 		testObject.create(file1);
 		testObject.create(file2);
@@ -138,14 +148,15 @@ public class TestItemFactoryTest {
 
 	@Test
 	public void getTestsReturnsCopiesOfList() throws Exception {
-		ParsedTestUnit unit1 = mock(ParsedTestUnit.class);
-		when(file.getTests()).thenReturn(Arrays.asList(unit1));
+		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(unit.getError()).thenReturn(Optional.empty());
+		when(file.getTests()).thenReturn(Arrays.asList(unit));
 
 		testObject.create(file);
 		List<ParsedTestUnit> copy1 = testObject.getTests();
 		List<ParsedTestUnit> copy2 = testObject.getTests();
 
-		List<ParsedTestUnit> expectedTests = Collections.singletonList(unit1);
+		List<ParsedTestUnit> expectedTests = Collections.singletonList(unit);
 		assertEquals(expectedTests, copy1);
 		assertEquals(expectedTests, copy2);
 		copy1.clear();
@@ -156,6 +167,7 @@ public class TestItemFactoryTest {
 	@Test
 	public void validFileShowsLoadedStatus() throws Exception {
 		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(unit.getError()).thenReturn(Optional.empty());
 		when(file.getTests()).thenReturn(Collections.singletonList(unit));
 		when(unit.getName()).thenReturn("This is a test name");
 
@@ -186,5 +198,21 @@ public class TestItemFactoryTest {
 		assertEquals("FileException", testItem.getStatus());
 		List<TestItem> children = testItem.getChildren();
 		assertEquals(0, children.size());
+	}
+
+	@Test
+	public void testWithErrorShowsInvalidStatus() throws Exception {
+		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(file.getTests()).thenReturn(Collections.singletonList(unit));
+		when(unit.getName()).thenReturn("This test is invalid.");
+		when(unit.getError()).thenReturn(Optional.of("Bad Command On Line 3"));
+
+		TestItem testItem = testObject.create(file);
+
+		assertEquals("Tests.yaml", testItem.getName());
+		List<TestItem> children = testItem.getChildren();
+		assertEquals(1, children.size());
+		assertEquals("This test is invalid.", children.get(0).getName());
+		assertEquals(TestResult.INVALID, children.get(0).getStatus());
 	}
 }
