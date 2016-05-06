@@ -32,7 +32,8 @@ public class TestItemFactory {
 	}
 
 	private TestItem create(ParsedTestUnit parsedTestUnit) {
-		TestItem testUnitItem = new TestItem(parsedTestUnit.getName(), TestResult.LOADED);
+		String status = parsedTestUnit.getError().isPresent() ? TestResult.INVALID : TestResult.LOADED;
+		TestItem testUnitItem = new TestItem(parsedTestUnit.getName(), status);
 		testItems.put(parsedTestUnit, testUnitItem);
 		return testUnitItem;
 	}
