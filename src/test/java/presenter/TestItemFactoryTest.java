@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ public class TestItemFactoryTest {
 		MockitoAnnotations.initMocks(this);
 		File actualFile = mock(File.class);
 		when(file.getFile()).thenReturn(actualFile);
+		when(file.getError()).thenReturn(Optional.empty());
 		when(actualFile.getName()).thenReturn("Tests.yaml");
 
 		testObject = new TestItemFactory();
@@ -123,6 +125,8 @@ public class TestItemFactoryTest {
 		when(file2.getTests()).thenReturn(Arrays.asList(unit2));
 		when(file1.getFile()).thenReturn(mock(File.class));
 		when(file2.getFile()).thenReturn(mock(File.class));
+		when(file1.getError()).thenReturn(Optional.empty());
+		when(file2.getError()).thenReturn(Optional.empty());
 
 		testObject.create(file1);
 		testObject.create(file2);
@@ -149,4 +153,38 @@ public class TestItemFactoryTest {
 		assertEquals(expectedTests, copy2);
 	}
 
+	@Test
+	public void validFileShowsLoadedStatus() throws Exception {
+		ParsedTestUnit unit = mock(ParsedTestUnit.class);
+		when(file.getTests()).thenReturn(Collections.singletonList(unit));
+		when(unit.getName()).thenReturn("This is a test name");
+
+		TestItem testItem = testObject.create(file);
+
+		assertEquals("FileLoaded", testItem.getStatus());
+	}
+
+	@Test
+	public void fileWithNoTestsShowsInvalidStatus() throws Exception {
+		when(file.getTests()).thenReturn(Collections.emptyList());
+
+		TestItem testItem = testObject.create(file);
+
+		assertEquals("Tests.yaml", testItem.getName());
+		assertEquals("FileInvalid", testItem.getStatus());
+		List<TestItem> children = testItem.getChildren();
+		assertEquals(0, children.size());
+	}
+
+	@Test
+	public void fileWithErrorShowsExceptionStatus() throws Exception {
+		when(file.getError()).thenReturn(Optional.of("Turbo Fail."));
+
+		TestItem testItem = testObject.create(file);
+
+		assertEquals("Tests.yaml", testItem.getName());
+		assertEquals("FileException", testItem.getStatus());
+		List<TestItem> children = testItem.getChildren();
+		assertEquals(0, children.size());
+	}
 }

@@ -1,6 +1,7 @@
 package presenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,17 @@ public class TestItemFactory {
 	private Map<ParsedTestUnit, TestItem> testItems = new LinkedHashMap<>();
 
 	public TestItem create(ParsedTestFile parsedTestFile) {
-		List<TestItem> children = parsedTestFile.getTests().stream().map(this::create).collect(Collectors.toList());
+		List<ParsedTestUnit> tests = parsedTestFile.getTests();
 		String fileName = parsedTestFile.getFile().getName();
-		TestItem testFileItem = new TestItem(fileName, "Loaded", children);
+		TestItem testFileItem;
+		if (parsedTestFile.getError().isPresent()) {
+			testFileItem = new TestItem(fileName, "FileException", Collections.emptyList());
+		} else if (tests.isEmpty()) {
+			testFileItem = new TestItem(fileName, "FileInvalid", Collections.emptyList());
+		} else {
+			List<TestItem> children = tests.stream().map(this::create).collect(Collectors.toList());
+			testFileItem = new TestItem(fileName, "FileLoaded", children);
+		}
 		return testFileItem;
 	}
 
