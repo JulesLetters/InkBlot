@@ -47,8 +47,11 @@ public class TestFileParser {
 
 	private List<ParsedTestUnit> parseTests(TestFile testFile) {
 		List<ParsedTestUnit> parsedTests = new ArrayList<ParsedTestUnit>();
-		for (TestFileUnit testFileUnit : testFile.getTests()) {
-			parsedTests.add(testUnitParser.parse(testFileUnit));
+		List<TestFileUnit> tests = testFile.getTests();
+		if (tests != null) {
+			for (TestFileUnit testFileUnit : tests) {
+				parsedTests.add(testUnitParser.parse(testFileUnit));
+			}
 		}
 		return parsedTests;
 

@@ -57,7 +57,7 @@ public class TestFileParserTest {
 	}
 
 	@Test
-	public void testCallbackIsCalledWithParsedTestFile() throws Exception {
+	public void callbackIsCalledWithParsedTestFile() throws Exception {
 		verify(callback, never()).parseCompleted(any(ParsedTestFile.class));
 		when(testFileLoader.loadTestfile(file)).thenReturn(testFile);
 		when(testFile.getTests()).thenReturn(Arrays.asList());
@@ -71,7 +71,7 @@ public class TestFileParserTest {
 	}
 
 	@Test
-	public void testParsedUnitIsSetOnParsedFile() throws Exception {
+	public void parsedUnitIsSetOnParsedFile() throws Exception {
 		when(testFileLoader.loadTestfile(file)).thenReturn(testFile);
 		when(testFile.getTests()).thenReturn(Arrays.asList(testUnit1));
 		when(testUnitParser.parse(testUnit1)).thenReturn(parsedUnit1);
@@ -86,7 +86,7 @@ public class TestFileParserTest {
 	}
 
 	@Test
-	public void testMultipleParsedUnitsAreSetOnParsedFile() throws Exception {
+	public void multipleParsedUnitsAreSetOnParsedFile() throws Exception {
 		when(testFileLoader.loadTestfile(file)).thenReturn(testFile);
 		when(testFile.getTests()).thenReturn(Arrays.asList(testUnit1, testUnit2));
 		when(testUnitParser.parse(testUnit1)).thenReturn(parsedUnit1);
@@ -103,7 +103,20 @@ public class TestFileParserTest {
 	}
 
 	@Test
-	public void testParsedTestFileHasErrorWhenFileNotFound() throws Exception {
+	public void noParsedUnitsAreSetForFileWithNoTests() throws Exception {
+		when(testFileLoader.loadTestfile(file)).thenReturn(testFile);
+		when(testFile.getTests()).thenReturn(null);
+
+		testFileParser.parse(file, callback);
+
+		verify(callback).parseCompleted(parsedTestFileCaptor.capture());
+		ParsedTestFile parsedTestFile = parsedTestFileCaptor.getValue();
+		List<ParsedTestUnit> parsedTests = parsedTestFile.getTests();
+		assertEquals(0, parsedTests.size());
+	}
+
+	@Test
+	public void parsedTestFileHasErrorWhenFileNotFound() throws Exception {
 		String expectedFilePath = "C:/MyFileLocation/MyFile.txt";
 		when(file.getAbsolutePath()).thenReturn(expectedFilePath);
 		when(testFileLoader.loadTestfile(file)).thenThrow(new FileNotFoundException());
@@ -118,7 +131,7 @@ public class TestFileParserTest {
 	}
 
 	@Test
-	public void testParsedTestFileHasErrorWhenYamlLoaderFails() throws Exception {
+	public void parsedTestFileHasErrorWhenYamlLoaderFails() throws Exception {
 		String expectedErrorText = "Yaml's error messages are generally helpful.";
 		when(testFileLoader.loadTestfile(file)).thenThrow(new YAMLException(expectedErrorText));
 
@@ -130,5 +143,4 @@ public class TestFileParserTest {
 		assertEquals(Collections.EMPTY_LIST, parsedTestFile.getTests());
 		assertEquals("Yaml Loading Failed:\r\n" + expectedErrorText, parsedTestFile.getError().get());
 	}
-
 }
