@@ -1,0 +1,5 @@
+tests: 
+  - name: BadTest
+    commands: [
+      "nonexistentCommand withAnArgument!"
+    ]

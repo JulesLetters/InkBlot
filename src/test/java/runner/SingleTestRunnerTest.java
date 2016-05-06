@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,7 @@ public class SingleTestRunnerTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		when(parsedTestUnit.getCommands()).thenReturn(commandList);
+		when(parsedTestUnit.getError()).thenReturn(Optional.empty());
 		singleTestRunner = new SingleTestRunner(commandRunner);
 	}
 
@@ -136,4 +138,16 @@ public class SingleTestRunnerTest {
 		assertEquals(TestResult.EXCEPTION, testResult.getStatus());
 		verify(commandRunner, never()).runCommand(command2, lineBuffer, lineWriter);
 	}
+
+	@Test
+	public void commandsAreNotRunForInvalidTests() throws Exception {
+		commandList.add(command1);
+		when(parsedTestUnit.getError()).thenReturn(Optional.of("Invalid Command on line 3"));
+
+		TestResult testResult = singleTestRunner.runTest(lineBuffer, lineWriter, parsedTestUnit);
+
+		assertEquals(TestResult.INVALID, testResult.getStatus());
+		verify(commandRunner, never()).runCommand(command1, lineBuffer, lineWriter);
+	}
+
 }
